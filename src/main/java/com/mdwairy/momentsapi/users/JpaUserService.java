@@ -1,5 +1,6 @@
 package com.mdwairy.momentsapi.users;
 
+import com.mdwairy.momentsapi.registration.RegistrationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,5 +16,10 @@ public class JpaUserService implements UserService {
         final String ERR_MSG = "User with email %s could not be found";
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format(ERR_MSG, email)));
+    }
+
+    @Override
+    public User register(RegistrationRequest request) {
+        return null;
     }
 }
