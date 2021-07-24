@@ -1,13 +1,18 @@
 package com.mdwairy.momentsapi.registration;
 
+import com.mdwairy.momentsapi.registration.tokens.ConfirmationToken;
+import com.mdwairy.momentsapi.registration.tokens.ConfirmationTokenService;
 import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserRole;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -15,14 +20,36 @@ public class RegistrationService {
 
     private final BCryptPasswordEncoder encoder;
     private final UserService userService;
+    private final ConfirmationTokenService confirmationTokenService;
 
-    public User register(@Valid RegistrationRequest request) {
+    public String register(@Valid RegistrationRequest request) {
         if (isUserExists(request.getEmail())) {
             throw new IllegalStateException("A user with this email is already registered");
         }
 
         User user = mapRegistrationRequestToUser(request);
-        return userService.register(user);
+        User savedUser = userService.register(user);
+        ConfirmationToken confirmationToken = createConfirmationToken(savedUser);
+        return confirmationTokenService.save(confirmationToken).getToken();
+    }
+
+    @Transactional
+    public String confirmToken(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
+
+        if (confirmationToken.getConfirmedAt() != null) {
+            throw new IllegalStateException("email already confirmed");
+        }
+
+        LocalDateTime expiredAt = confirmationToken.getExpiresAt();
+
+        if (expiredAt.isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("token expired");
+        }
+
+        confirmationTokenService.setConfirmedAt(token);
+        userService.enableUser(confirmationToken.getUser().getEmail());
+        return "confirmed";
     }
 
     private boolean isUserExists(String email) {
@@ -41,4 +68,19 @@ public class RegistrationService {
         user.setEnabled(false);
         return user;
     }
+
+    private ConfirmationToken createConfirmationToken(User user) {
+        ConfirmationToken confirmationToken = new ConfirmationToken();
+        confirmationToken.setToken(generateToken());
+        confirmationToken.setCreatedAt(LocalDateTime.now());
+        confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(15));
+        confirmationToken.setUser(user);
+        return confirmationToken;
+    }
+
+    private String generateToken() {
+        return UUID.randomUUID().toString();
+    }
+
+
 }

@@ -17,7 +17,12 @@ public class RegistrationController {
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public User registerNewUser(@RequestBody @Valid RegistrationRequest request) {
+    public String registerNewUser(@RequestBody @Valid RegistrationRequest request) {
         return registrationService.register(request);
+    }
+
+    @GetMapping("/confirm")
+    public String confirmEmail(@RequestParam("token") String token) {
+        return registrationService.confirmToken(token);
     }
 }

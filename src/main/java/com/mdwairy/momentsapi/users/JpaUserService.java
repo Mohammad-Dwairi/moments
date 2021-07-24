@@ -5,10 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class JpaUserService implements UserService {
 
@@ -30,6 +31,8 @@ public class JpaUserService implements UserService {
         return userRepository.save(user);
     }
 
-
-
+    @Override
+    public void enableUser(String email) {
+        userRepository.enableUser(email);
+    }
 }
