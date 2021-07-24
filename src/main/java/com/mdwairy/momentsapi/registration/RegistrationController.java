@@ -13,11 +13,11 @@ import javax.validation.Valid;
 @RequestMapping(path ="/registration", produces = "application/json")
 public class RegistrationController {
 
-    private final UserService userService;
+    private final RegistrationService registrationService;
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public User registerNewUser(@RequestBody @Valid RegistrationRequest request) {
-        return userService.register(request);
+        return registrationService.register(request);
     }
 }

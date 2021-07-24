@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class JpaUserService implements UserService {
@@ -19,7 +21,15 @@ public class JpaUserService implements UserService {
     }
 
     @Override
-    public User register(RegistrationRequest request) {
-        return null;
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
+
+    @Override
+    public User register(User user) {
+        return userRepository.save(user);
+    }
+
+
+
 }

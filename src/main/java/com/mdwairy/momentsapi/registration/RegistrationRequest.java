@@ -3,6 +3,7 @@ package com.mdwairy.momentsapi.registration;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -18,6 +19,7 @@ public class RegistrationRequest {
     private String lastName;
 
     @NotNull
+    @NotEmpty
     @Email(message = "Please enter a valid email address")
     private String email;
 
