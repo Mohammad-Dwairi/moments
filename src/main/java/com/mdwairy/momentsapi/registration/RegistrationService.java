@@ -1,11 +1,14 @@
 package com.mdwairy.momentsapi.registration;
 
+import com.mdwairy.momentsapi.email.EmailBuilder;
+import com.mdwairy.momentsapi.email.EmailService;
 import com.mdwairy.momentsapi.registration.tokens.ConfirmationToken;
 import com.mdwairy.momentsapi.registration.tokens.ConfirmationTokenService;
 import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserRole;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ public class RegistrationService {
     private final BCryptPasswordEncoder encoder;
     private final UserService userService;
     private final ConfirmationTokenService confirmationTokenService;
+    private final EmailService emailService;
 
     public String register(@Valid RegistrationRequest request) {
         if (isUserExists(request.getEmail())) {
@@ -30,7 +34,10 @@ public class RegistrationService {
         User user = mapRegistrationRequestToUser(request);
         User savedUser = userService.register(user);
         ConfirmationToken confirmationToken = createConfirmationToken(savedUser);
-        return confirmationTokenService.save(confirmationToken).getToken();
+        String tokenString = confirmationTokenService.save(confirmationToken).getToken();
+        String link = "http://localhost:8080/registration/confirm?token=" + tokenString;
+        emailService.send(savedUser.getEmail(), EmailBuilder.buildEmail(savedUser.getFirstName(), link));
+        return tokenString;
     }
 
     @Transactional
