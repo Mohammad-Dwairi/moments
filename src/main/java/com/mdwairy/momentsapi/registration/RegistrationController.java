@@ -1,7 +1,6 @@
 package com.mdwairy.momentsapi.registration;
 
 import com.mdwairy.momentsapi.users.User;
-import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
