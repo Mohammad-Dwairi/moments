@@ -40,7 +40,7 @@ public abstract class JwtUtil {
     }
 
     public static Date getTimeAfter(int minutes) {
-        return new Date(System.currentTimeMillis() * minutes * 60 * 1000);
+        return new Date(System.currentTimeMillis() + (long) minutes * 60 * 1000);
     }
 
     public static Map<String, String> buildTokensMap(String accessToken, String refreshToken) {
