@@ -26,7 +26,7 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailService emailService;
 
-    public String register(@Valid RegistrationRequest request) {
+    public User register(@Valid RegistrationRequest request) {
         if (isUserExists(request.getEmail())) {
             throw new IllegalStateException("A user with this email is already registered");
         }
@@ -37,7 +37,7 @@ public class RegistrationService {
         String tokenString = confirmationTokenService.save(confirmationToken).getToken();
         String link = "http://localhost:8080/registration/confirm?token=" + tokenString;
         emailService.send(savedUser.getEmail(), EmailBuilder.buildEmail(savedUser.getFirstName(), link));
-        return tokenString;
+        return savedUser;
     }
 
     @Transactional

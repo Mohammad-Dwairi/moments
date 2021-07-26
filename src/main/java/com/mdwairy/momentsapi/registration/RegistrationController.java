@@ -17,7 +17,7 @@ public class RegistrationController {
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public String registerNewUser(@RequestBody @Valid RegistrationRequest request) {
+    public User registerNewUser(@RequestBody @Valid RegistrationRequest request) {
         return registrationService.register(request);
     }
 
