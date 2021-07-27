@@ -2,6 +2,7 @@ package com.mdwairy.momentsapi.configurations;
 
 import com.mdwairy.momentsapi.filter.AppAuthenticationFilter;
 import com.mdwairy.momentsapi.filter.AppAuthorizationFilter;
+import com.mdwairy.momentsapi.handler.AppAuthenticationFailureHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +14,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
@@ -31,9 +37,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests().antMatchers("/registration/**", "/token/**").permitAll();
-        http.authorizeRequests().anyRequest().authenticated().and().formLogin();
-        http.addFilter(new AppAuthenticationFilter(authenticationManagerBean()));
+        http.authorizeRequests().anyRequest().authenticated();
+        http.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED));
+        http.addFilter(new AppAuthenticationFilter(authenticationManagerBean(), authenticationFailureHandler()));
         http.addFilterBefore(new AppAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.sessionManagement().sessionCreationPolicy(STATELESS);
     }
 
     @Bean
@@ -45,5 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return new AppAuthenticationFailureHandler();
     }
 }
