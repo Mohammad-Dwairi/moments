@@ -1,6 +1,7 @@
 package com.mdwairy.momentsapi.email;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -32,7 +34,8 @@ public class EmailService {
             javaMailSender.send(mimeMessage);
 
         } catch (Exception e) {
-            throw new IllegalStateException("Failed tro send the confirmation email");
+            log.error(e.getMessage());
+            throw new IllegalStateException("Failed to send the confirmation email");
         }
         return CompletableFuture.completedFuture("Email Sent");
     }
