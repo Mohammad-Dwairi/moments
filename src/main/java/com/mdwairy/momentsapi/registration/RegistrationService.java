@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -26,7 +28,7 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailService emailService;
 
-    public User register(@Valid RegistrationRequest request) throws UserAlreadyExistsException {
+    public User register(@Valid RegistrationRequest request) throws UserAlreadyExistsException, SendFailedException {
         if (isUserExists(request.getEmail())) {
             throw new UserAlreadyExistsException();
         }
@@ -34,9 +36,8 @@ public class RegistrationService {
         User user = mapRegistrationRequestToUser(request);
         User savedUser = userService.register(user);
         ConfirmationToken confirmationToken = createConfirmationToken(savedUser);
-        String tokenString = confirmationTokenService.save(confirmationToken).getToken();
-        String link = "http://localhost:8080/registration/confirm?token=" + tokenString;
-        emailService.send(savedUser.getEmail(), EmailBuilder.buildEmail(savedUser.getFirstName(), link));
+        String confirmationTokenString = confirmationTokenService.save(confirmationToken).getToken();
+        sendConfirmationEmail(savedUser, confirmationTokenString);
         return savedUser;
     }
 
@@ -89,5 +90,9 @@ public class RegistrationService {
         return UUID.randomUUID().toString();
     }
 
+    private void sendConfirmationEmail(User user, String confirmationToken) throws SendFailedException {
+        String confirmationLink = "http://localhost:8080/registration/confirm?token=" + confirmationToken;
+        emailService.send(user.getEmail(), EmailBuilder.buildEmail(user.getFirstName(), confirmationLink));
+    }
 
 }

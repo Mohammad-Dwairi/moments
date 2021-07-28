@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.SendFailedException;
 import javax.validation.Valid;
 
 @Slf4j
@@ -19,7 +20,7 @@ public class RegistrationController {
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public User registerNewUser(@RequestBody @Valid RegistrationRequest request) throws UserAlreadyExistsException {
+    public User registerNewUser(@RequestBody @Valid RegistrationRequest request) throws SendFailedException {
        return registrationService.register(request);
     }
 
