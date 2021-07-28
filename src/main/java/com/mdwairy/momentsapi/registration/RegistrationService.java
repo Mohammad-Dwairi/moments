@@ -45,7 +45,7 @@ public class RegistrationService {
         ConfirmationToken confirmationToken = confirmationTokenService.findByToken(token);
         confirmationTokenService.setConfirmedAt(confirmationToken);
         userService.enableUser(confirmationToken.getUser().getEmail());
-        return "confirmed";
+        return "Your email was successfully confirmed";
     }
 
     private boolean isUserExists(String email) {
