@@ -2,14 +2,13 @@ package com.mdwairy.momentsapi.registration;
 
 import com.mdwairy.momentsapi.email.EmailBuilder;
 import com.mdwairy.momentsapi.email.EmailService;
+import com.mdwairy.momentsapi.exception.UserAlreadyExistsException;
 import com.mdwairy.momentsapi.registration.tokens.ConfirmationToken;
 import com.mdwairy.momentsapi.registration.tokens.ConfirmationTokenService;
 import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserRole;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +26,9 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailService emailService;
 
-    public User register(@Valid RegistrationRequest request) throws Exception {
+    public User register(@Valid RegistrationRequest request) throws UserAlreadyExistsException {
         if (isUserExists(request.getEmail())) {
-            throw new Exception("A user with this email is already registered");
+            throw new UserAlreadyExistsException();
         }
 
         User user = mapRegistrationRequestToUser(request);
