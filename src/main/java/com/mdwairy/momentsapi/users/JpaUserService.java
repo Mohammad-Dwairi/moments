@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
+
 
 @Service
 @Transactional
@@ -27,7 +29,7 @@ public class JpaUserService implements UserService {
     }
 
     @Override
-    public User register(User user) {
+    public User register(@Valid User user) {
         return userRepository.save(user);
     }
 
