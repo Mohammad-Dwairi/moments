@@ -27,9 +27,9 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailService emailService;
 
-    public User register(@Valid RegistrationRequest request) {
+    public User register(@Valid RegistrationRequest request) throws Exception {
         if (isUserExists(request.getEmail())) {
-            throw new IllegalStateException("A user with this email is already registered");
+            throw new Exception("A user with this email is already registered");
         }
 
         User user = mapRegistrationRequestToUser(request);
