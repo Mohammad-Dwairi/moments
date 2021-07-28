@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "exception.user.exists",
+      "type": "java.lang.String",
+      "description": "User already exists exception message."
+    }
+  ] }
