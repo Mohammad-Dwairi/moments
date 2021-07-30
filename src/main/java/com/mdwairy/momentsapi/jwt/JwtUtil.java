@@ -43,7 +43,7 @@ public abstract class JwtUtil {
         return new Date(System.currentTimeMillis() + (long) minutes * 60 * 1000);
     }
 
-    public static Map<String, String> buildTokensMap(String accessToken, String refreshToken) {
+    public static Map<String, String> buildJWTResponseMap(String accessToken, String refreshToken) {
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);
         tokens.put("refresh_token", refreshToken);
