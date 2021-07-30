@@ -3,16 +3,21 @@ package com.mdwairy.momentsapi.registration.tokens;
 import com.mdwairy.momentsapi.exception.ConfirmationTokenAlreadyConfirmedException;
 import com.mdwairy.momentsapi.exception.ConfirmationTokenExpiredException;
 import com.mdwairy.momentsapi.exception.ConfirmationTokenNotFoundException;
+import com.mdwairy.momentsapi.users.User;
+import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Service
 @RequiredArgsConstructor
 public class ConfirmationTokenService {
 
+    private final UserService userService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
     public ConfirmationToken findByToken(String token) {
@@ -25,7 +30,31 @@ public class ConfirmationTokenService {
         return confirmationTokenRepository.save(confirmationToken);
     }
 
-    public void setConfirmedAt(ConfirmationToken confirmationToken) {
+    public ConfirmationToken getNewConfirmationToken(User user) {
+        ConfirmationToken confirmationToken = new ConfirmationToken();
+        confirmationToken.setToken(generateToken());
+        confirmationToken.setCreatedAt(LocalDateTime.now());
+        confirmationToken.setExpiresAt(LocalDateTime.now().plusMinutes(15));
+        confirmationToken.setUser(user);
+        return confirmationToken;
+    }
+
+    private String generateToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    @Transactional
+    public String confirmToken(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository
+                .findByToken(token)
+                .orElseThrow(ConfirmationTokenNotFoundException::new);
+
+        setConfirmedAt(confirmationToken);
+        userService.enableUser(confirmationToken.getUser().getEmail());
+        return "Your email was successfully confirmed";
+    }
+
+    private void setConfirmedAt(ConfirmationToken confirmationToken) {
         if (confirmationToken.getConfirmedAt() != null) {
             throw new ConfirmationTokenAlreadyConfirmedException();
         }
@@ -34,4 +63,5 @@ public class ConfirmationTokenService {
         }
         confirmationTokenRepository.setConfirmedAt(confirmationToken.getToken(), LocalDateTime.now());
     }
+
 }
