@@ -1,7 +1,9 @@
 package com.mdwairy.momentsapi.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mdwairy.momentsapi.jwt.JWTResponse;
 import com.mdwairy.momentsapi.users.User;
+import com.mdwairy.momentsapi.users.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.mdwairy.momentsapi.jwt.JwtUtil.*;
+import static com.mdwairy.momentsapi.jwt.JwtUtil.generateAccessToken;
+import static com.mdwairy.momentsapi.jwt.JwtUtil.generateRefreshToken;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -39,11 +42,20 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         User user = (User) authResult.getPrincipal();
-        var accessToken = generateAccessToken(user, request.getRequestURL().toString());
-        var refreshToken = generateRefreshToken(user, request.getRequestURL().toString());
-        var tokens = buildTokensMap(accessToken, refreshToken);
+        String accessToken = generateAccessToken(user, request.getRequestURL().toString());
+        String refreshToken = generateRefreshToken(user, request.getRequestURL().toString());
+        //var tokens = buildJWTResponseMap(accessToken, refreshToken);
+        JWTResponse jwtResponse = JWTResponse.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .role(UserRole.USER)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+
         response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+        new ObjectMapper().writeValue(response.getOutputStream(), jwtResponse);
     }
 
     @Override
