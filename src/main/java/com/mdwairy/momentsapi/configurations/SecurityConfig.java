@@ -36,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        http.authorizeRequests().antMatchers("/registration/**", "/token/**").permitAll();
+        http.authorizeRequests().antMatchers("/registration/**", "/token/**", "/email").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED));
         http.addFilter(new AppAuthenticationFilter(authenticationManagerBean(), authenticationFailureHandler()));
@@ -59,4 +59,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationFailureHandler authenticationFailureHandler() {
         return new AppAuthenticationFailureHandler();
     }
+
 }
