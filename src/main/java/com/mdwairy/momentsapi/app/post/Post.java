@@ -2,16 +2,16 @@ package com.mdwairy.momentsapi.app.post;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mdwairy.momentsapi.app.comment.Comment;
 import com.mdwairy.momentsapi.app.model.BaseEntity;
 import com.mdwairy.momentsapi.users.User;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,4 +27,11 @@ public class Post extends BaseEntity {
     @JsonIgnore
     private User user;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "post")
+    private List<Comment> comments = new LinkedList<>();
+
+    public void addComment(Comment comment) {
+        comment.setPost(this);
+        this.comments.add(comment);
+    }
 }
