@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,11 @@ public class PostServiceJPA implements PostService {
 
     @Override
     public Post findById(Long id) {
-        return postRepository.findById(id).orElse(null);
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if (optionalPost.isPresent()) {
+            return optionalPost.get();
+        }
+        throw new RuntimeException("Post not found");
     }
 
     @Override
