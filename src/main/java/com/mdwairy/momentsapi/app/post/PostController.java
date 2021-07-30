@@ -1,10 +1,9 @@
 package com.mdwairy.momentsapi.app.post;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -20,5 +19,15 @@ public class PostController {
     @ResponseStatus(CREATED)
     public Post save(@RequestBody Post post) {
         return postService.save(post);
+    }
+
+    @GetMapping("/{id}")
+    public Post findById(@PathVariable Long id) {
+        return postService.findById(id);
+    }
+
+    @GetMapping
+    public List<Post> findAll() {
+        return postService.findAll();
     }
 }

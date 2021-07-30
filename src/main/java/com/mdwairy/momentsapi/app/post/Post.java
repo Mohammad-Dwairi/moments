@@ -1,6 +1,7 @@
 package com.mdwairy.momentsapi.app.post;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mdwairy.momentsapi.app.model.BaseEntity;
 import com.mdwairy.momentsapi.users.User;
 import lombok.Getter;
@@ -11,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -23,7 +23,8 @@ public class Post extends BaseEntity {
     private LocalDateTime postedAt;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
+    private User user;
 
 }
