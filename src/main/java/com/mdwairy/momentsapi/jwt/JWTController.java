@@ -28,6 +28,6 @@ public class JWTController {
         String username = JwtUtil.decodeToken(refreshToken).getName();
         User user = userService.getUserByEmail(username);
         String accessToken = JwtUtil.generateAccessToken(user, request.getRequestURL().toString());
-        return JwtUtil.buildTokensMap(accessToken, refreshToken);
+        return JwtUtil.buildJWTResponseMap(accessToken, refreshToken);
     }
 }
