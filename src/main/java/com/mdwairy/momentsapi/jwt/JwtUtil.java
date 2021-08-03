@@ -25,7 +25,7 @@ public abstract class JwtUtil {
     public static String generateAccessToken(User user, String issuer) {
         return JWT.create()
                 .withSubject(user.getEmail())
-                .withExpiresAt(getTimeAfter(10))
+                .withExpiresAt(getTimeAfter(60))
                 .withIssuer(issuer)
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
