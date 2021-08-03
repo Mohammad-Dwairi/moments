@@ -7,5 +7,5 @@ public interface UserService extends UserDetailsService {
     User getUserByEmail(String email);
     User getUserFromSecurityContext();
     void enableUser(String email);
-
+    User findById(Long Id);
 }
