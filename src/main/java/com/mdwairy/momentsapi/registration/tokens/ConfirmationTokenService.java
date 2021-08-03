@@ -20,12 +20,6 @@ public class ConfirmationTokenService {
     private final UserService userService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
-    public ConfirmationToken findByToken(String token) {
-        return confirmationTokenRepository
-                .findByToken(token)
-                .orElseThrow(ConfirmationTokenNotFoundException::new);
-    }
-
     public ConfirmationToken save(ConfirmationToken confirmationToken) {
         return confirmationTokenRepository.save(confirmationToken);
     }
@@ -39,10 +33,6 @@ public class ConfirmationTokenService {
         return confirmationToken;
     }
 
-    private String generateToken() {
-        return UUID.randomUUID().toString();
-    }
-
     @Transactional
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository
@@ -52,6 +42,10 @@ public class ConfirmationTokenService {
         setConfirmedAt(confirmationToken);
         userService.enableUser(confirmationToken.getUser().getEmail());
         return "Your email was successfully confirmed";
+    }
+
+    private String generateToken() {
+        return UUID.randomUUID().toString();
     }
 
     private void setConfirmedAt(ConfirmationToken confirmationToken) {
