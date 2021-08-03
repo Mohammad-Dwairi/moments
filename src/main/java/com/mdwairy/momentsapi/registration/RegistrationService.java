@@ -40,7 +40,7 @@ public class RegistrationService {
         user.setPassword(HASHED_PASSWORD);
         user.setUserRole(UserRole.USER);
         user.setLocked(false);
-        user.setEnabled(false);
+        user.setEnabled(true);
         return user;
     }
 
