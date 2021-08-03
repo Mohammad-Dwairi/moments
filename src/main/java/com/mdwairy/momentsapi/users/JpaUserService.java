@@ -49,4 +49,11 @@ public class JpaUserService implements UserService {
     public void enableUser(String email) {
         userRepository.enableUser(email);
     }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }
