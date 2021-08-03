@@ -29,15 +29,15 @@ public class User implements UserDetails {
     @NotNull
     @NotEmpty
     @Size(min = 2, max = 20, message = "First name must be between 2 and 20 characters")
-    private String firstName;
+    protected String firstName;
 
     @NotNull
     @NotEmpty
     @Size(min = 2, max = 20, message = "Last name must be between 2 and 20 characters")
-    private String lastName;
+    protected String lastName;
 
     @Email(message = "Invalid email address")
-    private String email;
+    protected String email;
 
     @NotNull
     @NotEmpty
