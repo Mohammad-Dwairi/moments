@@ -29,7 +29,7 @@ public class EmailController {
             emailService.send(user);
             return "Email Sent";
         }
-        return "Failed";
+        throw new MessagingException("Failed to send the confirmation email");
     }
 
 }

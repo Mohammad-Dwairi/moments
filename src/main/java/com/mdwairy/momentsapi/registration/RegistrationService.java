@@ -21,7 +21,7 @@ public class RegistrationService {
 
     public void register(@Valid RegistrationRequest request) throws UserAlreadyExistsException {
         if (isUserExists(request.getEmail())) {
-            throw new UserAlreadyExistsException();
+            throw new UserAlreadyExistsException("This email is already registered");
         }
         User user = mapRegistrationRequestToUser(request);
         userService.register(user);

@@ -37,7 +37,7 @@ public class ConfirmationTokenService {
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository
                 .findByToken(token)
-                .orElseThrow(ConfirmationTokenNotFoundException::new);
+                .orElseThrow(() -> new ConfirmationTokenNotFoundException("Confirmation Token not found"));
 
         setConfirmedAt(confirmationToken);
         userService.enableUser(confirmationToken.getUser().getEmail());
@@ -50,10 +50,10 @@ public class ConfirmationTokenService {
 
     private void setConfirmedAt(ConfirmationToken confirmationToken) {
         if (confirmationToken.getConfirmedAt() != null) {
-            throw new ConfirmationTokenAlreadyConfirmedException();
+            throw new ConfirmationTokenAlreadyConfirmedException("Already Confirmed!");
         }
         else if (confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new ConfirmationTokenExpiredException();
+            throw new ConfirmationTokenExpiredException("Expired Confirmation Token");
         }
         confirmationTokenRepository.setConfirmedAt(confirmationToken.getToken(), LocalDateTime.now());
     }
