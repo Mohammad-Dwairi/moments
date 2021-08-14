@@ -66,6 +66,6 @@ public class UserServiceJPA implements UserService {
 
     @Override
     public void deleteByUsername(String username) {
-        userRepository.deleteByUsername(username);
+        userRepository.deleteByEmail(username);
     }
 }
