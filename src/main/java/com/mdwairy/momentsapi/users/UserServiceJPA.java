@@ -14,7 +14,7 @@ import javax.validation.Valid;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class JpaUserService implements UserService {
+public class UserServiceJPA implements UserService {
 
     private final UserRepository userRepository;
     @Override
@@ -41,8 +41,8 @@ public class JpaUserService implements UserService {
     }
 
     @Override
-    public User register(@Valid User user) {
-        return userRepository.save(user);
+    public void register(@Valid User user) {
+        userRepository.save(user);
     }
 
     @Override
