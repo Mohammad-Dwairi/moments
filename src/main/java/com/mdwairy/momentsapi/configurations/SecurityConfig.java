@@ -3,6 +3,7 @@ package com.mdwairy.momentsapi.configurations;
 import com.mdwairy.momentsapi.filter.AppAuthenticationFilter;
 import com.mdwairy.momentsapi.filter.AppAuthorizationFilter;
 import com.mdwairy.momentsapi.handler.AppAuthenticationFailureHandler;
+import com.mdwairy.momentsapi.jwt.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userService;
+    private final JWTService jwtService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -40,8 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/registration/**", "/token/**", "/email").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED));
-        http.addFilter(new AppAuthenticationFilter(authenticationManagerBean(), authenticationFailureHandler()));
-        http.addFilterBefore(new AppAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(new AppAuthenticationFilter(authenticationManagerBean(), authenticationFailureHandler(), jwtService));
+        http.addFilterBefore(new AppAuthorizationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement().sessionCreationPolicy(STATELESS);
     }
 

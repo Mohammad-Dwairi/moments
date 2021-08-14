@@ -2,8 +2,8 @@ package com.mdwairy.momentsapi.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mdwairy.momentsapi.jwt.JWTResponse;
+import com.mdwairy.momentsapi.jwt.JWTService;
 import com.mdwairy.momentsapi.users.User;
-import com.mdwairy.momentsapi.users.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.mdwairy.momentsapi.jwt.JwtUtil.generateAccessToken;
-import static com.mdwairy.momentsapi.jwt.JwtUtil.generateRefreshToken;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -29,6 +27,7 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final AuthenticationManager authenticationManager;
     private final AuthenticationFailureHandler authenticationFailureHandler;
+    private final JWTService jwtService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -40,26 +39,20 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+                                            Authentication authResult) throws IOException {
         User user = (User) authResult.getPrincipal();
-        String accessToken = generateAccessToken(user, request.getRequestURL().toString());
-        String refreshToken = generateRefreshToken(user, request.getRequestURL().toString());
-        //var tokens = buildJWTResponseMap(accessToken, refreshToken);
-        JWTResponse jwtResponse = JWTResponse.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .role(UserRole.USER)
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-
+        String issuer = request.getRequestURL().toString();
+        String accessToken = jwtService.getAccessToken(user, issuer);
+        String refreshToken = jwtService.getRefreshToken(user, issuer);
+        JWTResponse jwtResponse = jwtService.buildJWTResponse(accessToken, refreshToken);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), jwtResponse);
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                              AuthenticationException failed) throws IOException, ServletException {
         authenticationFailureHandler.onAuthenticationFailure(request, response, failed);
         //super.unsuccessfulAuthentication(request, response, failed);
     }

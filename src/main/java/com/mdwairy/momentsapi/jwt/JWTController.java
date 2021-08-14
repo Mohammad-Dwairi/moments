@@ -4,12 +4,12 @@ import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -20,14 +20,19 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class JWTController {
 
     private final UserService userService;
+    private final JWTService jwtService;
 
     @PostMapping("/refresh")
-    public Map<String, String> refreshToken(HttpServletRequest request) {
+    public JWTResponse refreshToken(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         String refreshToken = authorizationHeader.substring("Bearer ".length());
-        String username = JwtUtil.decodeToken(refreshToken).getName();
+        String username = jwtService.decodeToken(refreshToken).getName();
         User user = userService.getUserByEmail(username);
-        String accessToken = JwtUtil.generateAccessToken(user, request.getRequestURL().toString());
-        return JwtUtil.buildJWTResponseMap(accessToken, refreshToken);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        String issuer = request.getRequestURL().toString();
+        String accessToken = jwtService.getAccessToken(user, issuer);
+        return jwtService.buildJWTResponse(accessToken, refreshToken);
     }
 }

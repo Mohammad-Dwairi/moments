@@ -1,17 +1,15 @@
 package com.mdwairy.momentsapi.jwt;
 
-import com.mdwairy.momentsapi.users.UserRole;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.Date;
 
 
 @Data
 @Builder
 public class JWTResponse {
-
-    private String firstName;
-    private String lastName;
-    private String email;
-    private UserRole role;
     private String accessToken;
     private String refreshToken;
+    private Date accessTokenExpiresAt;
 }
