@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @Service
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 public class UserServiceJPA implements UserService {
 
     private final UserRepository userRepository;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         final String ERR_MSG = "User with email %s could not be found";
@@ -27,6 +29,11 @@ public class UserServiceJPA implements UserService {
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     @Override
@@ -55,5 +62,10 @@ public class UserServiceJPA implements UserService {
         return userRepository
                 .findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    public void deleteByUsername(String username) {
+        userRepository.deleteByUsername(username);
     }
 }

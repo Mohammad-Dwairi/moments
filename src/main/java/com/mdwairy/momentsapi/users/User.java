@@ -1,5 +1,6 @@
 package com.mdwairy.momentsapi.users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ import java.util.Collections;
 public class User implements UserDetails {
 
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -42,9 +44,13 @@ public class User implements UserDetails {
     @NotNull
     @NotEmpty
     @Size(min = 5, message = "Password must be at least 5 characters")
+    @JsonIgnore
     private String password;
 
+    @JsonIgnore
     private Boolean locked = false;
+
+    @JsonIgnore
     private Boolean enabled = false;
 
     @Enumerated(EnumType.STRING)
@@ -64,26 +70,31 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public String getUsername() {
         return email;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return !locked;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return enabled;
     }
