@@ -1,7 +1,7 @@
 package com.mdwairy.momentsapi.app.friend;
 
 import com.mdwairy.momentsapi.exception.FriendRequestException;
-import com.mdwairy.momentsapi.users.JpaUserService;
+import com.mdwairy.momentsapi.users.UserServiceJPA;
 import com.mdwairy.momentsapi.users.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class FriendRequestServiceJPATest {
     FriendRequestRepository friendRequestRepository;
 
     @Mock
-    JpaUserService userService;
+    UserServiceJPA userService;
 
     @BeforeEach
     void setUp() {
