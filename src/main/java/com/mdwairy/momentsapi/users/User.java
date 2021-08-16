@@ -1,6 +1,7 @@
 package com.mdwairy.momentsapi.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mdwairy.momentsapi.app.userdetails.AppUserDetails;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -55,6 +56,9 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    @OneToOne
+    private AppUserDetails appUserDetails = new AppUserDetails();
 
     public User(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
