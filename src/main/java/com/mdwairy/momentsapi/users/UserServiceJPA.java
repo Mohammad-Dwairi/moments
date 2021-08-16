@@ -1,6 +1,9 @@
 package com.mdwairy.momentsapi.users;
 
+import com.mdwairy.momentsapi.app.userdetails.AppUserDetailsRepository;
+import com.mdwairy.momentsapi.app.userdetails.AppUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,10 +17,16 @@ import java.util.List;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class UserServiceJPA implements UserService {
 
     private final UserRepository userRepository;
+    private final AppUserDetailsRepository detailsRepository;
+
+
+    public UserServiceJPA(UserRepository userRepository, AppUserDetailsRepository detailsRepository) {
+        this.userRepository = userRepository;
+        this.detailsRepository = detailsRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -49,6 +58,7 @@ public class UserServiceJPA implements UserService {
 
     @Override
     public void register(@Valid User user) {
+        detailsRepository.save(user.getAppUserDetails());
         userRepository.save(user);
     }
 
