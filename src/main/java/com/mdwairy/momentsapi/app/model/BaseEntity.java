@@ -1,7 +1,9 @@
 package com.mdwairy.momentsapi.app.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +13,8 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class BaseEntity {
 
     @Id
