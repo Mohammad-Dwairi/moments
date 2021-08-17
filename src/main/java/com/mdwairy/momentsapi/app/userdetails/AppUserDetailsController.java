@@ -31,4 +31,23 @@ public class AppUserDetailsController {
     public void removeProfilePicture(@PathVariable String pictureUrl) {
         detailsService.deleteProfilePicture(pictureUrl);
     }
+
+    @PostMapping("/cover_pictures")
+    public String addNewCoverPicture(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("pictureUrl")) {
+            return detailsService.saveCoverPicture(requestBody.get("pictureUrl"));
+        }
+        throw new RuntimeException("Something went wrong!");
+    }
+
+    @DeleteMapping("/cover_pictures/current")
+    public void removeCurrentCoverPicture() {
+        detailsService.deleteCurrentCoverPicture();
+    }
+
+    @DeleteMapping("/cover_pictures/{pictureUrl}")
+    public void removeCoverPicture(@PathVariable String pictureUrl) {
+        detailsService.deleteCoverPicture(pictureUrl);
+    }
+
 }

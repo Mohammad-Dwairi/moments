@@ -44,5 +44,12 @@ public class AppUserDetails extends BaseEntity {
         }
         this.profilePictures.add(pictureUrl);
     }
+    public void addCoverPicture(String pictureUrl) {
+        if (this.coverPictures == null) {
+            this.coverPictures = new ArrayList<>();
+        }
+        this.coverPictures.add(pictureUrl);
+    }
+
 
 }
