@@ -1,9 +1,10 @@
 package com.mdwairy.momentsapi.app.userdetails;
 
-import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -14,93 +15,53 @@ public class AppUserDetailsJPA implements AppUserDetailsService {
 
     @Override
     public String saveProfilePicture(String pictureUrl) {
-        User user = userService.getUserFromSecurityContext();
-        var userDetailsOptional = detailsRepository.findById(user.getAppUserDetails().getId());
-        if (userDetailsOptional.isPresent()) {
-            AppUserDetails userDetails = userDetailsOptional.get();
-            userDetails.setCurrentProfilePicture(pictureUrl);
-            userDetails.addProfilePicture(pictureUrl);
-            detailsRepository.save(userDetails);
-            return pictureUrl;
-        }
-        throw new RuntimeException("User details not found!");
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setCurrentProfilePicture(pictureUrl);
+        userDetails.addProfilePicture(pictureUrl);
+        return detailsRepository.save(userDetails).getCurrentProfilePicture();
     }
 
     @Override
     public void deleteCurrentProfilePicture() {
-        User user = userService.getUserFromSecurityContext();
-        var userDetailsOptional = detailsRepository.findById(user.getAppUserDetails().getId());
-
-        if (userDetailsOptional.isPresent()) {
-            AppUserDetails userDetails = userDetailsOptional.get();
-            userDetails.setCurrentProfilePicture(null);
-            detailsRepository.save(userDetails);
-            return;
-        }
-
-        throw new RuntimeException("User details not found!");
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setCurrentProfilePicture(null);
+        detailsRepository.save(userDetails);
     }
 
     @Override
     public void deleteProfilePicture(String pictureUrl) {
-        User user = userService.getUserFromSecurityContext();
-        System.out.println(user.getId());
-        var userDetailsOptional = detailsRepository.findById(user.getAppUserDetails().getId());
-
-        if (userDetailsOptional.isPresent()) {
-            AppUserDetails userDetails = userDetailsOptional.get();
-            var pictures = userDetails.getProfilePictures();
-            pictures.remove(pictureUrl);
-            detailsRepository.save(userDetails);
-            return;
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        var pictures = userDetails.getProfilePictures();
+        pictures.remove(pictureUrl);
+        if (Objects.equals(userDetails.getCurrentProfilePicture(), pictureUrl)) {
+            userDetails.setCurrentProfilePicture(null);
         }
-
-        throw new RuntimeException("User details not found!");
+        detailsRepository.save(userDetails);
     }
 
     @Override
     public String saveCoverPicture(String pictureUrl) {
-        User user = userService.getUserFromSecurityContext();
-        var userDetailsOptional = detailsRepository.findById(user.getAppUserDetails().getId());
-        if (userDetailsOptional.isPresent()) {
-            AppUserDetails userDetails = userDetailsOptional.get();
-            userDetails.setCurrentCoverPicture(pictureUrl);
-            userDetails.addCoverPicture(pictureUrl);
-            detailsRepository.save(userDetails);
-            return pictureUrl;
-        }
-        throw new RuntimeException("User details not found!");
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setCurrentCoverPicture(pictureUrl);
+        userDetails.addCoverPicture(pictureUrl);
+        return detailsRepository.save(userDetails).getCurrentCoverPicture();
     }
 
     @Override
     public void deleteCurrentCoverPicture() {
-        User user = userService.getUserFromSecurityContext();
-        var userDetailsOptional = detailsRepository.findById(user.getAppUserDetails().getId());
-
-        if (userDetailsOptional.isPresent()) {
-            AppUserDetails userDetails = userDetailsOptional.get();
-            userDetails.setCurrentCoverPicture(null);
-            detailsRepository.save(userDetails);
-            return;
-        }
-
-        throw new RuntimeException("User details not found!");
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setCurrentCoverPicture(null);
+        detailsRepository.save(userDetails);
     }
 
     @Override
     public void deleteCoverPicture(String pictureUrl) {
-        User user = userService.getUserFromSecurityContext();
-        System.out.println(user.getId());
-        var userDetailsOptional = detailsRepository.findById(user.getAppUserDetails().getId());
-
-        if (userDetailsOptional.isPresent()) {
-            AppUserDetails userDetails = userDetailsOptional.get();
-            var pictures = userDetails.getCoverPictures();
-            pictures.remove(pictureUrl);
-            detailsRepository.save(userDetails);
-            return;
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        var pictures = userDetails.getCoverPictures();
+        pictures.remove(pictureUrl);
+        if (userDetails.getCurrentCoverPicture().equals(pictureUrl)) {
+            userDetails.setCurrentCoverPicture(null);
         }
-
-        throw new RuntimeException("User details not found!");
+        detailsRepository.save(userDetails);
     }
 }
