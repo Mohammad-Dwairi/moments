@@ -53,7 +53,7 @@ public class UserServiceJPA implements UserService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        return getUserByEmail(username);
+        return user;
     }
 
     @Override
