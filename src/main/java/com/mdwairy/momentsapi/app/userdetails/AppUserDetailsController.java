@@ -50,4 +50,88 @@ public class AppUserDetailsController {
         detailsService.deleteCoverPicture(pictureUrl);
     }
 
+    @PostMapping("/education")
+    public String addNewEducation(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("education")) {
+            return detailsService.saveEducation(requestBody.get("education"));
+        }
+        throw new RuntimeException("Something went wrong!");
+    }
+
+    @PutMapping("/education")
+    public String editExistingEducation(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("old") && requestBody.containsKey("new")) {
+            return detailsService.editEducation(requestBody.get("old"), requestBody.get("new"));
+        }
+        throw new RuntimeException("Something went wrong!");
+    }
+
+    @DeleteMapping("/education")
+    public void deleteEducation(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("education")) {
+            detailsService.deleteEducation(requestBody.get("education"));
+            return;
+        }
+        throw new RuntimeException("Something went wrong!");
+    }
+
+    @PostMapping("/work")
+    public void addNewWork(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("work")) {
+            detailsService.saveWork(requestBody.get("work"));
+            return;
+        }
+        throw new RuntimeException("Something went wrong!");
+    }
+
+    @PutMapping("/work")
+    public void editWork(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("old") && requestBody.containsKey("new")) {
+            detailsService.editWork(requestBody.get("old"), requestBody.get("new"));
+        }
+    }
+
+    @DeleteMapping("/work")
+    public void deleteWork(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("work")) {
+            detailsService.deleteWork(requestBody.get("work"));
+        }
+    }
+
+    @PostMapping("/living_place")
+    public void setLivingPlace(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("livesIn")) {
+            detailsService.saveLivingPlace(requestBody.get("livesIn"));
+        }
+    }
+
+    @DeleteMapping("/living_place")
+    public void deleteLivingPlace() {
+        detailsService.deleteLivingPlace();
+    }
+
+    @PostMapping("/country")
+    public void setCountry(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("country")) {
+            detailsService.saveCountry(requestBody.get("country"));
+        }
+    }
+
+    @DeleteMapping("/country")
+    public void deleteCountry() {
+        detailsService.deleteCountry();
+    }
+
+    @PostMapping("/bio")
+    public void setBio(@RequestBody Map<String, String> requestBody) {
+        if (requestBody.containsKey("bio")) {
+            detailsService.saveBio(requestBody.get("bio"));
+        }
+    }
+
+    @DeleteMapping("/bio")
+    public void deleteBio() {
+        detailsService.deleteBio();
+    }
+
 }

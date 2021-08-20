@@ -64,4 +64,91 @@ public class AppUserDetailsJPA implements AppUserDetailsService {
         }
         detailsRepository.save(userDetails);
     }
+
+    @Override
+    public String saveEducation(String education) {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.addEducation(education);
+        detailsRepository.save(userDetails);
+        return "DONE!";
+    }
+
+    @Override
+    public String editEducation(String oldEdu, String newEdu) {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        String edited = userDetails.editEducation(oldEdu, newEdu);
+        detailsRepository.save(userDetails);
+        return edited;
+    }
+
+    @Override
+    public void deleteEducation(String education) {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.deleteEducation(education);
+        detailsRepository.save(userDetails);
+    }
+
+    @Override
+    public void saveWork(String work) {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.addWork(work);
+        detailsRepository.save(userDetails);
+    }
+
+    @Override
+    public void editWork(String oldWork, String newWork) {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.editWork(oldWork, newWork);
+        detailsRepository.save(userDetails);
+    }
+
+    @Override
+    public void deleteWork(String work) {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.deleteWork(work);
+        detailsRepository.save(userDetails);
+    }
+
+    @Override
+    public void saveLivingPlace(String livesIn) {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setLivesIn(livesIn);
+        detailsRepository.save(userDetails);
+    }
+
+    @Override
+    public void deleteLivingPlace() {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setLivesIn(null);
+        detailsRepository.save(userDetails);
+    }
+
+    @Override
+    public void saveCountry(String country) {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setCountry(country);
+        detailsRepository.save(userDetails);
+    }
+
+    @Override
+    public void deleteCountry() {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setCountry(null);
+        detailsRepository.save(userDetails);
+    }
+
+    @Override
+    public void saveBio(String bio) {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setBio(bio);
+        detailsRepository.save(userDetails);
+    }
+
+    @Override
+    public void deleteBio() {
+        AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
+        userDetails.setBio(null);
+        detailsRepository.save(userDetails);
+    }
+
 }
