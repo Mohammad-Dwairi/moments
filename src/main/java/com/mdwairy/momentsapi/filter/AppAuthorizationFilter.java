@@ -31,8 +31,8 @@ public class AppAuthorizationFilter extends OncePerRequestFilter {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
 
-                    String token = authorizationHeader.substring("Bearer ".length());
-                    UsernamePasswordAuthenticationToken authenticationToken = jwtService.decodeToken(token);
+                    String token = jwtService.removeTokenBearerPrefix(authorizationHeader);
+                    UsernamePasswordAuthenticationToken authenticationToken = jwtService.getAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
                 } catch (Exception exception) {

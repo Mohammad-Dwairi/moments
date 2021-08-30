@@ -3,7 +3,7 @@ package com.mdwairy.momentsapi.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mdwairy.momentsapi.jwt.JWTResponse;
 import com.mdwairy.momentsapi.jwt.JWTService;
-import com.mdwairy.momentsapi.users.User;
+import com.mdwairy.momentsapi.users.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,20 +32,19 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        var username = request.getParameter("username");
-        var password = request.getParameter("password");
-        var authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         return authenticationManager.authenticate(authenticationToken);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) throws IOException {
-        User user = (User) authResult.getPrincipal();
-        String issuer = request.getRequestURL().toString();
-        String accessToken = jwtService.getAccessToken(user, issuer);
-        String refreshToken = jwtService.getRefreshToken(user, issuer);
-        JWTResponse jwtResponse = jwtService.buildJWTResponse(accessToken, refreshToken);
+        UserPrincipal userPrincipal = (UserPrincipal) authResult.getPrincipal();
+        String accessToken = jwtService.getAccessToken(userPrincipal);
+        String refreshToken = jwtService.getRefreshToken(userPrincipal);
+        JWTResponse jwtResponse = jwtService.buildJWTResponse(userPrincipal.getUsername(), accessToken, refreshToken);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), jwtResponse);
     }
