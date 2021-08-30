@@ -1,10 +1,10 @@
 package com.mdwairy.momentsapi.users;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mdwairy.momentsapi.app.userdetails.AppUserDetails;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -14,14 +14,13 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "users")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class User implements Serializable {
 
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -41,13 +40,10 @@ public class User implements Serializable {
     @NotNull
     @NotEmpty
     @Size(min = 5, message = "Password must be at least 5 characters")
-    @JsonIgnore
     private String password;
 
-    @JsonIgnore
     private Boolean isAccountLocked = false;
 
-    @JsonIgnore
     private Boolean isAccountEnabled = false;
 
     @Enumerated(EnumType.STRING)
