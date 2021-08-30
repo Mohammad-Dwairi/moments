@@ -38,7 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        http.authorizeRequests().antMatchers("/registration/**", "/token/**", "/email", "/users/**").permitAll();
+        http.authorizeRequests().antMatchers("/registration/**", "/token/**", "/email", "/users/**", "/h2-console/**").permitAll();
+        http.headers().frameOptions().disable();
         http.authorizeRequests().anyRequest().authenticated();
         http.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED));
         http.addFilter(new AppAuthenticationFilter(authenticationManagerBean(), authenticationFailureHandler(), jwtService));
