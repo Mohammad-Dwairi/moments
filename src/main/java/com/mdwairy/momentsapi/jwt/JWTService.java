@@ -4,23 +4,19 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.mdwairy.momentsapi.users.User;
+import com.mdwairy.momentsapi.users.UserPrincipal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.mdwairy.momentsapi.constant.JWTConstant.*;
 
 @Service
 public class JWTService {
-
-    public static final int ACCESS_TOKEN_EXPIRES_WITHIN = 60;
-    public static final int REFRESH_TOKEN_EXPIRES_WITHIN = 1000;
 
     private final Algorithm algorithm;
 
@@ -28,47 +24,72 @@ public class JWTService {
         this.algorithm = Algorithm.HMAC256(secret.getBytes());
     }
 
-    public String getAccessToken(User user, String issuer) {
-        List<String> USER_ROLES = user.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+    public String getAccessToken(UserPrincipal userPrincipal) {
+        String[] claims = this.getUserAuthorities(userPrincipal);
 
         return JWT.create()
-                .withSubject(user.getEmail())
+                .withSubject(userPrincipal.getUsername())
+                .withIssuer(MOMENTS_LLC)
+                .withArrayClaim(AUTHORITIES, claims)
                 .withIssuedAt(getTimeAfter(0))
-                .withExpiresAt(getTimeAfter(ACCESS_TOKEN_EXPIRES_WITHIN))
-                .withIssuer(issuer)
-                .withClaim("roles", USER_ROLES)
+                .withExpiresAt(getTimeAfter(ACCESS_TOKEN_EXPIRATION_TIME))
                 .sign(algorithm);
     }
 
-    public String getRefreshToken(User user, String issuer) {
+    public String getRefreshToken(UserPrincipal userPrincipal) {
         return JWT.create()
-                .withSubject(user.getEmail())
-                .withExpiresAt(getTimeAfter(REFRESH_TOKEN_EXPIRES_WITHIN))
-                .withIssuer(issuer)
+                .withSubject(userPrincipal.getUsername())
+                .withIssuer(MOMENTS_LLC)
+                .withIssuedAt(getTimeAfter(0))
+                .withExpiresAt(getTimeAfter(REFRESH_TOKEN_EXPIRATION_TIME))
                 .sign(algorithm);
     }
 
-    public UsernamePasswordAuthenticationToken decodeToken(String token) {
-        JWTVerifier verifier = JWT.require(algorithm).build();
-        DecodedJWT decodedJWT = verifier.verify(token);
-        String username = decodedJWT.getSubject();
-        Collection<SimpleGrantedAuthority> authorities = decodedJWT.getClaim("roles").asList(SimpleGrantedAuthority.class);
-        return new UsernamePasswordAuthenticationToken(username, null, authorities);
-    }
-
-    public JWTResponse buildJWTResponse(String accessToken, String refreshToken) {
+    public JWTResponse buildJWTResponse(String email, String accessToken, String refreshToken) {
         return JWTResponse.builder()
+                .email(email)
                 .accessToken(accessToken)
-                .accessTokenExpiresAt(getTimeAfter(ACCESS_TOKEN_EXPIRES_WITHIN))
+                .accessTokenExpiresAt(getTimeAfter(ACCESS_TOKEN_EXPIRATION_TIME))
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    private Date getTimeAfter(int minutes) {
-        return new Date(System.currentTimeMillis() + (long) minutes * 60 * 1000);
+    public String getUsernameFromToken(String token) {
+        DecodedJWT decodedJWT = decodeToken(token);
+        return decodedJWT.getSubject();
+    }
+
+    public String removeTokenBearerPrefix(String token) {
+        return token.substring(TOKEN_PREFIX.length());
+    }
+
+    public UsernamePasswordAuthenticationToken getAuthentication(String token) {
+        String username = getUsernameFromToken(token);
+        List<GrantedAuthority> authorities = this.getAuthoritiesFromToken(token);
+        return new UsernamePasswordAuthenticationToken(username, null, authorities);
+    }
+
+    private DecodedJWT decodeToken(String token) {
+        JWTVerifier verifier = this.getJWTVerifier();
+        return verifier.verify(token);
+    }
+
+    private String[] getUserAuthorities(UserPrincipal userPrincipal) {
+        return userPrincipal.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority).toArray(String[]::new);
+    }
+
+    private List<GrantedAuthority> getAuthoritiesFromToken(String token) {
+        return decodeToken(token).getClaim(AUTHORITIES).asList(GrantedAuthority.class);
+    }
+
+    private JWTVerifier getJWTVerifier() {
+        return JWT.require(algorithm).withIssuer(MOMENTS_LLC).build();
+    }
+
+    private Date getTimeAfter(long minutes) {
+        return new Date(System.currentTimeMillis() + minutes * 60 * 1000);
     }
 
 }

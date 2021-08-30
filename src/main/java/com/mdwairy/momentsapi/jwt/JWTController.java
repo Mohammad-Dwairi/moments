@@ -1,6 +1,7 @@
 package com.mdwairy.momentsapi.jwt;
 
 import com.mdwairy.momentsapi.users.User;
+import com.mdwairy.momentsapi.users.UserPrincipal;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +26,11 @@ public class JWTController {
     @PostMapping("/refresh")
     public JWTResponse refreshToken(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        String refreshToken = authorizationHeader.substring("Bearer ".length());
-        String username = jwtService.decodeToken(refreshToken).getName();
-        User user = userService.getUserByEmail(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        String issuer = request.getRequestURL().toString();
-        String accessToken = jwtService.getAccessToken(user, issuer);
-        return jwtService.buildJWTResponse(accessToken, refreshToken);
+        String refreshToken = jwtService.removeTokenBearerPrefix(authorizationHeader);
+        String username = jwtService.getUsernameFromToken(refreshToken);
+        User user = userService.findByEmail(username);
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+        String accessToken = jwtService.getAccessToken(userPrincipal);
+        return jwtService.buildJWTResponse(username, accessToken, refreshToken);
     }
 }
