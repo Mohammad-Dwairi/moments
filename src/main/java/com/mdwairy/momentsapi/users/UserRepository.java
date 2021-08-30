@@ -9,10 +9,11 @@ import java.util.Optional;
 
 @Transactional
 public interface UserRepository extends JpaRepository<User, Long> {
+
     Optional<User> findByEmail(String email);
 
     @Modifying
-    @Query("UPDATE User u SET u.enabled = TRUE WHERE u.email = ?1")
+    @Query("UPDATE User SET isAccountEnabled = TRUE WHERE email = ?1")
     void enableUser(String email);
 
     void deleteByEmail(String username);

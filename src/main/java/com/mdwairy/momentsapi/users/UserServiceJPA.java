@@ -1,9 +1,6 @@
 package com.mdwairy.momentsapi.users;
 
 import com.mdwairy.momentsapi.app.userdetails.AppUserDetailsRepository;
-import com.mdwairy.momentsapi.app.userdetails.AppUserDetailsService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
+
+import static com.mdwairy.momentsapi.constant.UserExceptionMessage.USER_NOT_FOUND_BY_EMAIL;
+import static com.mdwairy.momentsapi.constant.UserExceptionMessage.USER_NOT_FOUND_BY_ID;
 
 
 @Service
@@ -30,14 +31,13 @@ public class UserServiceJPA implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        final String ERR_MSG = "User with email %s could not be found";
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format(ERR_MSG, email)));
-    }
-
-    @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return new UserPrincipal(user);
+        } else {
+            throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_EMAIL, email));
+        }
     }
 
     @Override
@@ -45,15 +45,21 @@ public class UserServiceJPA implements UserService {
         return userRepository.findAll();
     }
 
+
     @Override
-    public User getUserFromSecurityContext() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getPrincipal().toString();
-        User user = getUserByEmail(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
+    public User findById(Long id) {
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_ID, id)));
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            return userOptional.get();
         }
-        return user;
+        throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_EMAIL, email));
     }
 
     @Override
@@ -63,15 +69,15 @@ public class UserServiceJPA implements UserService {
     }
 
     @Override
-    public void enableUser(String email) {
-        userRepository.enableUser(email);
+    public User getUserFromSecurityContext() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getPrincipal().toString();
+        return this.findByEmail(email);
     }
 
     @Override
-    public User findById(Long id) {
-        return userRepository
-                .findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public void enableUser(String email) {
+        userRepository.enableUser(email);
     }
 
     @Override

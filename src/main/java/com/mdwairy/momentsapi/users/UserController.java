@@ -1,7 +1,6 @@
 package com.mdwairy.momentsapi.users;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,11 +21,7 @@ public class UserController {
 
     @GetMapping("/{username}")
     public User getUserByUsername(@PathVariable("username") String username) {
-        User user = userService.getUserByEmail(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User Not Found");
-        }
-        return user;
+        return userService.findByEmail(username);
     }
 
     @DeleteMapping("/{username}")
