@@ -27,6 +27,7 @@ public class RegistrationService {
             throw new UserAlreadyExistsException(UserExceptionMessage.USER_ALREADY_REGISTERED);
         }
         User user = mapRegistrationRequestToUser(request);
+        user.setPassword (encodePassword(user.getPassword()));
         userService.register(user);
     }
 
@@ -40,17 +41,11 @@ public class RegistrationService {
     }
 
     private User mapRegistrationRequestToUser(@Valid RegistrationRequest request) {
+        return RegistrationRequestMapper.INSTANCE.registrationRequestToUser(request);
+    }
 
-        final String HASHED_PASSWORD = encoder.encode(request.getPassword());
-        request.setPassword(HASHED_PASSWORD);
-
-        User user = RegistrationRequestMapper.INSTANCE.registrationRequestToUser(request);
-        user.setRole(UserRole.ROLE_USER);
-        user.setIsAccountLocked(false);
-        user.setIsAccountEnabled(true);
-
-        log.info("Mapped Registration to User: {}", user);
-        return user;
+    private String encodePassword(String password) {
+        return encoder.encode(password);
     }
 
 }
