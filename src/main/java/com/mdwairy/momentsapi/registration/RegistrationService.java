@@ -1,11 +1,14 @@
 package com.mdwairy.momentsapi.registration;
 
+import com.mdwairy.momentsapi.constant.UserExceptionMessage;
 import com.mdwairy.momentsapi.exception.UserAlreadyExistsException;
+import com.mdwairy.momentsapi.mapper.RegistrationRequestMapper;
 import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserRole;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,26 +24,32 @@ public class RegistrationService {
 
     public void register(@Valid RegistrationRequest request) throws UserAlreadyExistsException {
         if (isUserExists(request.getEmail())) {
-            throw new UserAlreadyExistsException("This email is already registered");
+            throw new UserAlreadyExistsException(UserExceptionMessage.USER_ALREADY_REGISTERED);
         }
         User user = mapRegistrationRequestToUser(request);
         userService.register(user);
     }
 
     private boolean isUserExists(String email) {
-        return userService.getUserByEmail(email) != null;
+        try {
+            userService.findByEmail(email);
+            return true;
+        } catch (UsernameNotFoundException e) {
+            return false;
+        }
     }
 
     private User mapRegistrationRequestToUser(@Valid RegistrationRequest request) {
+
         final String HASHED_PASSWORD = encoder.encode(request.getPassword());
-        User user = new User();
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setPassword(HASHED_PASSWORD);
-        user.setUserRole(UserRole.USER);
-        user.setLocked(false);
-        user.setEnabled(true);
+        request.setPassword(HASHED_PASSWORD);
+
+        User user = RegistrationRequestMapper.INSTANCE.registrationRequestToUser(request);
+        user.setUserRole(UserRole.ROLE_USER);
+        user.setIsAccountLocked(false);
+        user.setIsAccountEnabled(true);
+
+        //log.info("Mapped Registration to User: {}", user);
         return user;
     }
 
