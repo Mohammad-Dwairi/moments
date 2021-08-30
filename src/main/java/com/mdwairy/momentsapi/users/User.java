@@ -51,7 +51,7 @@ public class User implements Serializable {
     private Boolean isAccountEnabled = false;
 
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private UserRole role;
 
     @OneToOne
     private AppUserDetails appUserDetails = new AppUserDetails();

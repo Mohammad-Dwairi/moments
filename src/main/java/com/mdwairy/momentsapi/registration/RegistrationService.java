@@ -45,11 +45,11 @@ public class RegistrationService {
         request.setPassword(HASHED_PASSWORD);
 
         User user = RegistrationRequestMapper.INSTANCE.registrationRequestToUser(request);
-        user.setUserRole(UserRole.ROLE_USER);
+        user.setRole(UserRole.ROLE_USER);
         user.setIsAccountLocked(false);
         user.setIsAccountEnabled(true);
 
-        //log.info("Mapped Registration to User: {}", user);
+        log.info("Mapped Registration to User: {}", user);
         return user;
     }
 
