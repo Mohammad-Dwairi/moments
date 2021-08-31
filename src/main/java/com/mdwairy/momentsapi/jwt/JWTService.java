@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.mdwairy.momentsapi.exception.JWTException;
 import com.mdwairy.momentsapi.users.UserPrincipal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.mdwairy.momentsapi.constant.JWTConstant.*;
+import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.INVALID_TOKEN;
 
 @Service
 public class JWTService {
@@ -62,7 +64,10 @@ public class JWTService {
     }
 
     public String removeTokenBearerPrefix(String token) {
-        return token.substring(TOKEN_PREFIX.length());
+        if (token!= null && token.startsWith(TOKEN_PREFIX)) {
+            return token.substring(TOKEN_PREFIX.length());
+        }
+        throw new JWTException(INVALID_TOKEN);
     }
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {

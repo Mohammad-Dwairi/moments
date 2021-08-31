@@ -71,4 +71,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, NOT_FOUND);
     }
 
+    @ExceptionHandler(value = {JWTException.class})
+    public ResponseEntity<Object> jwtException(JWTException e) {
+        errorResponse.setStatus(BAD_REQUEST.value());
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setTimestamp(currentTimeMillis());
+        return new ResponseEntity<>(errorResponse, BAD_REQUEST);
+    }
+
 }
