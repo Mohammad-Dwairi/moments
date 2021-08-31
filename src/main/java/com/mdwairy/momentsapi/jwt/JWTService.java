@@ -8,10 +8,12 @@ import com.mdwairy.momentsapi.users.UserPrincipal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mdwairy.momentsapi.constant.JWTConstant.*;
 
@@ -25,12 +27,12 @@ public class JWTService {
     }
 
     public String getAccessToken(UserPrincipal userPrincipal) {
-        String[] claims = this.getUserAuthorities(userPrincipal);
+        List<String> claims = this.getUserAuthorities(userPrincipal);
 
         return JWT.create()
                 .withSubject(userPrincipal.getUsername())
                 .withIssuer(MOMENTS_LLC)
-                .withArrayClaim(AUTHORITIES, claims)
+                .withClaim(AUTHORITIES, claims)
                 .withIssuedAt(getTimeAfter(0))
                 .withExpiresAt(getTimeAfter(ACCESS_TOKEN_EXPIRATION_TIME))
                 .sign(algorithm);
@@ -65,7 +67,7 @@ public class JWTService {
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         String username = getUsernameFromToken(token);
-        List<GrantedAuthority> authorities = this.getAuthoritiesFromToken(token);
+        List<SimpleGrantedAuthority> authorities = this.getAuthoritiesFromToken(token);
         return new UsernamePasswordAuthenticationToken(username, null, authorities);
     }
 
@@ -74,14 +76,14 @@ public class JWTService {
         return verifier.verify(token);
     }
 
-    private String[] getUserAuthorities(UserPrincipal userPrincipal) {
+    private List<String> getUserAuthorities(UserPrincipal userPrincipal) {
         return userPrincipal.getAuthorities()
                 .stream()
-                .map(GrantedAuthority::getAuthority).toArray(String[]::new);
+                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
     }
 
-    private List<GrantedAuthority> getAuthoritiesFromToken(String token) {
-        return decodeToken(token).getClaim(AUTHORITIES).asList(GrantedAuthority.class);
+    private List<SimpleGrantedAuthority> getAuthoritiesFromToken(String token) {
+        return decodeToken(token).getClaim(AUTHORITIES).asList(SimpleGrantedAuthority.class);
     }
 
     private JWTVerifier getJWTVerifier() {
