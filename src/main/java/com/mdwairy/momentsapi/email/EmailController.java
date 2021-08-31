@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 
-import static com.mdwairy.momentsapi.constant.UserExceptionMessage.USER_NOT_FOUND_BY_USERNAME;
+import static com.mdwairy.momentsapi.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -32,7 +32,7 @@ public class EmailController {
             return "Email Sent";
         }
         catch (UsernameNotFoundException e) {
-            throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_USERNAME, username));
+            throw new UsernameNotFoundException(USER_NOT_FOUND);
         }
         catch (MessagingException e) {
             throw new MessagingException("Failed to send the confirmation email");

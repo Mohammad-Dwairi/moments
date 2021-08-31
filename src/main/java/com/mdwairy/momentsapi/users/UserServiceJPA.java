@@ -12,8 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-import static com.mdwairy.momentsapi.constant.UserExceptionMessage.USER_NOT_FOUND_BY_USERNAME;
-import static com.mdwairy.momentsapi.constant.UserExceptionMessage.USER_NOT_FOUND_BY_ID;
+import static com.mdwairy.momentsapi.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 
 @Service
@@ -36,7 +35,7 @@ public class UserServiceJPA implements UserService {
             User user = userOptional.get();
             return new UserPrincipal(user);
         } else {
-            throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_USERNAME, username));
+            throw new UsernameNotFoundException(USER_NOT_FOUND);
         }
     }
 
@@ -50,7 +49,7 @@ public class UserServiceJPA implements UserService {
     public User findById(Long id) {
         return userRepository
                 .findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_ID, id)));
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
     }
 
     @Override
@@ -59,7 +58,7 @@ public class UserServiceJPA implements UserService {
         if (userOptional.isPresent()) {
             return userOptional.get();
         }
-        throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_USERNAME, username));
+        throw new UsernameNotFoundException(USER_NOT_FOUND);
     }
 
     @Override
@@ -68,7 +67,7 @@ public class UserServiceJPA implements UserService {
         if (userOptional.isPresent()) {
             return userOptional.get();
         }
-        throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_USERNAME, email));
+        throw new UsernameNotFoundException(USER_NOT_FOUND);
     }
 
     @Override
