@@ -10,20 +10,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.AUTHENTICATION_FAILED;
 import static java.lang.System.currentTimeMillis;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 public class AppAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
+    // If the user entered bad credentials
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException e) throws IOException {
-        response.setStatus(UNAUTHORIZED.value());
+
+        log.error("AUTHENTICATION FAILURE HANDLER");
+
         AppErrorResponse errorResponse = new AppErrorResponse();
-        errorResponse.setMessage(e.getMessage());
+        errorResponse.setMessage(AUTHENTICATION_FAILED);
         errorResponse.setTimestamp(currentTimeMillis());
         errorResponse.setStatus(UNAUTHORIZED.value());
-        new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
 
+        response.setContentType(APPLICATION_JSON_VALUE);
+        response.setStatus(UNAUTHORIZED.value());
+
+        new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
     }
 }
