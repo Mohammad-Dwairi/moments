@@ -3,6 +3,7 @@ package com.mdwairy.momentsapi.configurations;
 import com.mdwairy.momentsapi.filter.AppAuthenticationFilter;
 import com.mdwairy.momentsapi.filter.AppAuthorizationFilter;
 import com.mdwairy.momentsapi.filter.AppAuthenticationEntryPoint;
+import com.mdwairy.momentsapi.handler.AppAccessDeniedHandler;
 import com.mdwairy.momentsapi.handler.AppAuthenticationFailureHandler;
 import com.mdwairy.momentsapi.handler.AppAuthenticationSuccessHandler;
 import com.mdwairy.momentsapi.jwt.JWTService;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -18,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -27,6 +30,10 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
@@ -42,8 +49,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.headers().frameOptions().disable();
-        http.authorizeRequests().antMatchers("/registration/**", "/token/**", "/email", "/users/**", "/h2-console/**").permitAll();
+        http.authorizeRequests().antMatchers("/registration/**", "/token/**", "/email", "/h2-console/**").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
+        http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint());
         http.addFilter(getAuthenticationFilter());
         http.addFilterBefore(getAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -74,6 +82,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return new AppAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new AppAccessDeniedHandler();
     }
 
     private AppAuthenticationFilter getAuthenticationFilter() throws Exception {
