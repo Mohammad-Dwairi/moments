@@ -4,7 +4,6 @@ import com.mdwairy.momentsapi.app.userdetails.AppUserDetails;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -16,7 +15,6 @@ import java.io.Serializable;
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 public class User implements Serializable {
 
@@ -49,7 +47,7 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private AppUserDetails appUserDetails = new AppUserDetails();
 
     public User(String firstName, String lastName, String email, String password) {
