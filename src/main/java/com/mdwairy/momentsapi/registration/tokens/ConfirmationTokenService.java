@@ -40,7 +40,7 @@ public class ConfirmationTokenService {
                 .orElseThrow(() -> new ConfirmationTokenNotFoundException("Confirmation Token not found"));
 
         setConfirmedAt(confirmationToken);
-        userService.enableUser(confirmationToken.getUser().getEmail());
+        userService.enableUser(confirmationToken.getUser().getUsername());
         return "Your email was successfully confirmed";
     }
 

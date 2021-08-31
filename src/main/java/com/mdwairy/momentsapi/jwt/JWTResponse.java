@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 @Builder
 public class JWTResponse {
-    private String email;
+    private String username;
     private String accessToken;
     private String refreshToken;
     private Date accessTokenExpiresAt;

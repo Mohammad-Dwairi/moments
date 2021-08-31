@@ -14,7 +14,7 @@ public class AppUserDetailsJPA implements AppUserDetailsService {
     private final UserService userService;
 
     @Override
-    public String saveProfilePicture(String pictureUrl) {
+    public String saveProfilePicture(String pictureUrl, String username) {
         AppUserDetails userDetails = userService.getUserFromSecurityContext().getAppUserDetails();
         userDetails.setCurrentProfilePicture(pictureUrl);
         userDetails.addProfilePicture(pictureUrl);

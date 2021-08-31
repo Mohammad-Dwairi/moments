@@ -1,23 +1,33 @@
 package com.mdwairy.momentsapi.app.userdetails;
 
+import com.mdwairy.momentsapi.users.User;
+import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Map;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/details", consumes = APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/users/{username}/details")
 public class AppUserDetailsController {
 
     private final AppUserDetailsService detailsService;
+    private final UserService userService;
+
+    @GetMapping
+    public AppUserDetails getUserDetails(@PathVariable String username) {
+        User user = userService.findByUsername(username);
+        return user.getAppUserDetails();
+    }
 
     @PostMapping("/profile_pictures")
-    public String addNewProfilePicture(@RequestBody Map<String, String> requestBody) {
+    public String addNewProfilePicture(@RequestBody Map<String, String> requestBody, @PathVariable String username) {
         if (requestBody.containsKey("pictureUrl")) {
-            return detailsService.saveProfilePicture(requestBody.get("pictureUrl"));
+            return detailsService.saveProfilePicture(requestBody.get("pictureUrl"), username);
         }
         throw new RuntimeException("Something went wrong!");
     }

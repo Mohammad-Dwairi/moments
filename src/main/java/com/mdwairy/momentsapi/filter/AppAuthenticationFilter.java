@@ -35,7 +35,7 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("ATTEMPT AUTHENTICATION");
 
         LoginRequestDto loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
         super.setDetails(request, authenticationToken);
         return authenticationManager.authenticate(authenticationToken);
     }

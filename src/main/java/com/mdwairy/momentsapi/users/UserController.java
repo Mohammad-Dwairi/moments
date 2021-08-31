@@ -24,13 +24,12 @@ public class UserController {
 
     @GetMapping("/{username}")
     public UserDto getUserByUsername(@PathVariable("username") String username) {
-        User user = userService.findByEmail(username);
+        User user = userService.findByUsername(username);
         return UserMapper.INSTANCE.userToUserDto(user);
     }
 
     @DeleteMapping("/{username}")
     public void deleteUser(@PathVariable("username") String username) {
-        //TODO ADMIN or OWNER access ONlY.
         userService.deleteByUsername(username);
     }
 

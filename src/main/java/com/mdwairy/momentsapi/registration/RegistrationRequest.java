@@ -11,6 +11,10 @@ import javax.validation.constraints.Size;
 public class RegistrationRequest {
 
     @NotNull
+    @Size(min = 2, max = 30, message = "Username Should be between 2 and 30 characters")
+    private String username;
+
+    @NotNull
     @Size(min = 2, max = 15, message = "First Name Should be between 2 and 15 characters")
     private String firstName;
 

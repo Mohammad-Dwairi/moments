@@ -5,7 +5,6 @@ import com.mdwairy.momentsapi.users.UserPrincipal;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +27,7 @@ public class JWTController {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         String refreshToken = jwtService.removeTokenBearerPrefix(authorizationHeader);
         String username = jwtService.getUsernameFromToken(refreshToken);
-        User user = userService.findByEmail(username);
+        User user = userService.findByUsername(username);
         UserPrincipal userPrincipal = new UserPrincipal(user);
         String accessToken = jwtService.getAccessToken(userPrincipal);
         return jwtService.buildJWTResponse(username, accessToken, refreshToken);

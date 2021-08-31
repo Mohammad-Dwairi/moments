@@ -22,6 +22,7 @@ public class DataLoader implements CommandLineRunner {
         request.setFirstName("Mohammad");
         request.setLastName("Dwairi");
         request.setEmail("mdwairy@gmail.com");
+        request.setUsername("mohammad_dwairi");
         request.setPassword("12345");
         registrationService.register(request);
         log.info("User Registered... ");

@@ -47,9 +47,9 @@ public class JWTService {
                 .sign(algorithm);
     }
 
-    public JWTResponse buildJWTResponse(String email, String accessToken, String refreshToken) {
+    public JWTResponse buildJWTResponse(String username, String accessToken, String refreshToken) {
         return JWTResponse.builder()
-                .email(email)
+                .username(username)
                 .accessToken(accessToken)
                 .accessTokenExpiresAt(getTimeAfter(ACCESS_TOKEN_EXPIRATION_TIME))
                 .refreshToken(refreshToken)

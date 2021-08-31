@@ -1,7 +1,12 @@
 package com.mdwairy.momentsapi.app.userdetails;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 public interface AppUserDetailsService {
-    String saveProfilePicture(String imageUrl);
+
+    @PreAuthorize("#username == authentication.name")
+    String saveProfilePicture(String imageUrl, String username);
+
     void deleteCurrentProfilePicture();
     void deleteProfilePicture(String pictureUrl);
 

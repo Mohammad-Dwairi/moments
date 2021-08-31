@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 
-import static com.mdwairy.momentsapi.constant.UserExceptionMessage.USER_NOT_FOUND_BY_EMAIL;
+import static com.mdwairy.momentsapi.constant.UserExceptionMessage.USER_NOT_FOUND_BY_USERNAME;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -25,14 +25,14 @@ public class EmailController {
     private final UserService userService;
 
     @GetMapping
-    public String sendEmail(@RequestParam("email") String email) throws MessagingException {
+    public String sendEmail(@RequestParam("username") String username) throws MessagingException {
         try {
-            User user = userService.findByEmail(email);
+            User user = userService.findByUsername(username);
             emailService.send(user);
             return "Email Sent";
         }
         catch (UsernameNotFoundException e) {
-            throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_EMAIL, email));
+            throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_BY_USERNAME, username));
         }
         catch (MessagingException e) {
             throw new MessagingException("Failed to send the confirmation email");
