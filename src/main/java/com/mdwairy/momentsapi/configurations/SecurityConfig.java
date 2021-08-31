@@ -7,6 +7,7 @@ import com.mdwairy.momentsapi.handler.AppAccessDeniedHandler;
 import com.mdwairy.momentsapi.handler.AppAuthenticationFailureHandler;
 import com.mdwairy.momentsapi.handler.AppAuthenticationSuccessHandler;
 import com.mdwairy.momentsapi.jwt.JWTService;
+import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +38,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+    private final UserService userService;
     private final JWTService jwtService;
 
 
@@ -90,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private AppAuthenticationFilter getAuthenticationFilter() throws Exception {
-        return new AppAuthenticationFilter(authenticationManagerBean(), authenticationSuccessHandler(), authenticationFailureHandler());
+        return new AppAuthenticationFilter(authenticationManagerBean(), authenticationSuccessHandler(), authenticationFailureHandler(), userService);
     }
 
     private AppAuthorizationFilter getAuthorizationFilter() {

@@ -2,6 +2,7 @@ package com.mdwairy.momentsapi.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mdwairy.momentsapi.dto.LoginRequestDto;
+import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final AuthenticationManager authenticationManager;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final AuthenticationFailureHandler authenticationFailureHandler;
+    private final UserService userService;
 
     @Override
     @SneakyThrows
@@ -35,7 +37,17 @@ public class AppAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("ATTEMPT AUTHENTICATION");
 
         LoginRequestDto loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+
+        String username = loginRequest.getUsername();
+        String email = loginRequest.getEmail();
+        final String password = loginRequest.getPassword();
+
+        if (username.isBlank() && !email.isBlank()) {
+            log.info("INSIDE USERNAME BLANK");
+            username = userService.findByEmail(email).getUsername();
+        }
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         super.setDetails(request, authenticationToken);
         return authenticationManager.authenticate(authenticationToken);
     }
