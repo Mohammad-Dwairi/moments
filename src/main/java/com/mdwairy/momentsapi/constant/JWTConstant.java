@@ -1,6 +1,6 @@
 package com.mdwairy.momentsapi.constant;
 
-public class JWTConstant {
+public abstract class JWTConstant {
 
     public static final Long ACCESS_TOKEN_EXPIRATION_TIME = 100000L;
     public static final Long REFRESH_TOKEN_EXPIRATION_TIME = 100000L;
