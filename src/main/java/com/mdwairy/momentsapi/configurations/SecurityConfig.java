@@ -26,6 +26,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.mdwairy.momentsapi.constant.SecurityConstant.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -51,7 +52,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.headers().frameOptions().disable();
-        http.authorizeRequests().antMatchers("/registration/**", "/token/**", "/email", "/h2-console/**").permitAll();
+        http.authorizeRequests().antMatchers(PUBLIC_ENDPOINTS).permitAll();
+        http.authorizeRequests().antMatchers(OWNER_RESTRICTED_ENDPOINTS).access(USER_ENDPOINTS_SPEL_ACCESS);
+        //http.authorizeRequests().antMatchers(ADMIN_RESTRICTED_ENDPOINT).access("hasRole('ADMIN')");
         http.authorizeRequests().anyRequest().authenticated();
         http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint());

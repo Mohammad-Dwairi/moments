@@ -24,7 +24,7 @@ public class AppAuthenticationFailureHandler implements AuthenticationFailureHan
                                         AuthenticationException e) throws IOException {
 
         log.error("AUTHENTICATION FAILURE HANDLER");
-
+        log.error(e.getMessage());
         AppErrorResponse errorResponse = new AppErrorResponse();
         errorResponse.setMessage(AUTHENTICATION_FAILED);
         errorResponse.setTimestamp(currentTimeMillis());

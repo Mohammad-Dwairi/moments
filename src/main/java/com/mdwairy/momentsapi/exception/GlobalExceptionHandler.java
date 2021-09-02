@@ -79,4 +79,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = {InvalidJsonKeyException.class, InvalidJsonValueException.class})
+    public ResponseEntity<Object> invalidJsonKeyExceptionHandler(RuntimeException e) {
+        errorResponse.setStatus(BAD_REQUEST.value());
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setTimestamp(currentTimeMillis());
+        return new ResponseEntity<>(errorResponse, BAD_REQUEST);
+    }
+
 }

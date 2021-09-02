@@ -11,12 +11,21 @@ public interface UserService extends UserDetailsService {
     User findById(Long Id);
     User findByUsername(String username);
     User findByEmail(String email);
+    User getUserFromSecurityContext();
 
     void register(User user);
-    User getUserFromSecurityContext();
-    void enableUser(String username);
 
-    @PreAuthorize("#username == authentication.name")
+    void enableUser(String username);
+    void disableUser(String username);
+
+    void updateFirstName(String username, String firstname);
+    void updateLastName(String username, String lastName);
+    void updateUsername(String username, String newUsername); // INVALIDATE TOKEN
+    void updatePassword(String username,String oldPassword, String newPassword); // INVALIDATE TOKEN
+
+    @PreAuthorize("hasRole('ADMIN')")
+    void updateUserRole(String username, String role); // INVALIDATE TOKEN
+
     void deleteByUsername(String username);
 
 }
