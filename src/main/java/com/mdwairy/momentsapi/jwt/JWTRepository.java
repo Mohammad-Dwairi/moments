@@ -8,14 +8,14 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class JWTRepository {
 
-    public static final String SET_NAME = "jwt";
+    public static final String JWT_SET_NAME = "jwt";
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void save(String token) {
-        redisTemplate.opsForSet().add(SET_NAME, token);
+        redisTemplate.opsForSet().add(JWT_SET_NAME, token);
     }
 
     public boolean isExists(String token) {
-        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(SET_NAME, token));
+        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(JWT_SET_NAME, token));
     }
 }

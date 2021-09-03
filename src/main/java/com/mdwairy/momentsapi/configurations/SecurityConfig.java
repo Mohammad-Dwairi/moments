@@ -7,6 +7,7 @@ import com.mdwairy.momentsapi.handler.AppAccessDeniedHandler;
 import com.mdwairy.momentsapi.handler.AppAuthenticationFailureHandler;
 import com.mdwairy.momentsapi.handler.AppAuthenticationSuccessHandler;
 import com.mdwairy.momentsapi.jwt.JWTService;
+import com.mdwairy.momentsapi.users.UserSecurity;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final UserService userService;
     private final JWTService jwtService;
-
+    private final UserSecurity userSecurity;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -54,7 +55,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().disable();
         http.authorizeRequests().antMatchers(PUBLIC_ENDPOINTS).permitAll();
         http.authorizeRequests().antMatchers(OWNER_RESTRICTED_ENDPOINTS).access(USER_ENDPOINTS_SPEL_ACCESS);
-        //http.authorizeRequests().antMatchers(ADMIN_RESTRICTED_ENDPOINT).access("hasRole('ADMIN')");
         http.authorizeRequests().anyRequest().authenticated();
         http.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint());
@@ -81,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new AppAuthenticationSuccessHandler(jwtService);
+        return new AppAuthenticationSuccessHandler(jwtService, userSecurity);
     }
 
     @Bean
@@ -99,7 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private AppAuthorizationFilter getAuthorizationFilter() {
-        return new AppAuthorizationFilter(jwtService);
+        return new AppAuthorizationFilter(jwtService, userSecurity);
     }
 
 }

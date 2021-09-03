@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mdwairy.momentsapi.jwt.JWTResponse;
 import com.mdwairy.momentsapi.jwt.JWTService;
 import com.mdwairy.momentsapi.users.UserPrincipal;
+import com.mdwairy.momentsapi.users.UserSecurity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class AppAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JWTService jwtService;
+    private final UserSecurity userSecurity;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -28,6 +30,12 @@ public class AppAuthenticationSuccessHandler implements AuthenticationSuccessHan
         log.info("AUTHENTICATION SUCCESS HANDLER");
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        String username = userPrincipal.getUsername();
+
+        if (userSecurity.isUserBlacklisted(username)) {
+            userSecurity.removeUserFromBlacklist(username);
+        }
+
         String accessToken = jwtService.getAccessToken(userPrincipal);
         String refreshToken = jwtService.getRefreshToken(userPrincipal);
         JWTResponse jwtResponse = jwtService.buildJWTResponse(userPrincipal.getUsername(), accessToken, refreshToken);

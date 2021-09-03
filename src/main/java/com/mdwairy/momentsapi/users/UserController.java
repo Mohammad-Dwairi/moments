@@ -6,11 +6,13 @@ import com.mdwairy.momentsapi.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.INVALID_JSON_KEY;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -59,10 +61,11 @@ public class UserController {
     }
 
     @PatchMapping("/{username}/username")
-    public void updateUserName(@PathVariable String username, @RequestBody Map<String, String> request) {
+    public void updateUserName(HttpServletRequest servletRequest, @PathVariable String username, @RequestBody Map<String, String> request) {
         String USERNAME = "username";
+        String authorizationHeader = servletRequest.getHeader(AUTHORIZATION);
         if (request.containsKey(USERNAME)) {
-            userService.updateUsername(username, request.get(USERNAME));
+            userService.updateUsername(username, request.get(USERNAME), authorizationHeader);
         }
         else {
             throw new InvalidJsonKeyException(INVALID_JSON_KEY);

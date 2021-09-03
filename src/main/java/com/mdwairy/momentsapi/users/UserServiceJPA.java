@@ -1,8 +1,8 @@
 package com.mdwairy.momentsapi.users;
 
 import com.mdwairy.momentsapi.app.userdetails.AppUserDetailsRepository;
-import com.mdwairy.momentsapi.exception.InvalidJsonKeyException;
 import com.mdwairy.momentsapi.exception.InvalidJsonValueException;
+import com.mdwairy.momentsapi.jwt.JWTService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
@@ -32,12 +32,17 @@ public class UserServiceJPA implements UserService {
 
     private final UserRepository userRepository;
     private final AppUserDetailsRepository detailsRepository;
+    private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final UserSecurity userSecurity;
 
-    public UserServiceJPA(UserRepository userRepository, AppUserDetailsRepository detailsRepository, @Lazy PasswordEncoder passwordEncoder) {
+    public UserServiceJPA(UserRepository userRepository, AppUserDetailsRepository detailsRepository,
+                          JWTService jwtService, @Lazy PasswordEncoder passwordEncoder, UserSecurity userSecurity) {
         this.userRepository = userRepository;
         this.detailsRepository = detailsRepository;
+        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
+        this.userSecurity = userSecurity;
     }
 
     @Override
@@ -116,8 +121,10 @@ public class UserServiceJPA implements UserService {
     }
 
     @Override
-    public void updateUsername(String username, String newUsername) {
+    public void updateUsername(String username, String newUsername, String accessToken) {
+        accessToken = jwtService.removeTokenBearerPrefix(accessToken);
         userRepository.updateUserName(username, newUsername);
+        jwtService.addTokenToBlacklist(accessToken);
     }
 
     @Override
@@ -131,11 +138,14 @@ public class UserServiceJPA implements UserService {
             if (match) {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 userRepository.save(user);
+
             } else {
                 throw new AccessDeniedException(AUTHENTICATION_FAILED);
             }
         }
-        throw new UsernameNotFoundException(USER_NOT_FOUND);
+        else {
+            throw new UsernameNotFoundException(USER_NOT_FOUND);
+        }
     }
 
     @Override
@@ -144,6 +154,9 @@ public class UserServiceJPA implements UserService {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+            if (user.getRole() == ROLE_ADMIN && !user.getUsername().equals(username)) {
+                throw new AccessDeniedException("Not permitted");
+            }
             if (role.equals("ADMIN")) {
                 user.setRole(ROLE_ADMIN);
             } else if (role.equals("USER")) {
@@ -152,6 +165,10 @@ public class UserServiceJPA implements UserService {
                 throw new InvalidJsonValueException(INVALID_ROLE);
             }
             userRepository.save(user);
+            userSecurity.addUserToBlacklist(username);
+        }
+        else {
+            throw new UsernameNotFoundException(USER_NOT_FOUND);
         }
     }
 

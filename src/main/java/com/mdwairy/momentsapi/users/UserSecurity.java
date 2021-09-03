@@ -2,6 +2,7 @@ package com.mdwairy.momentsapi.users;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 public class UserSecurity {
 
     private final HttpServletRequest httpServletRequest;
+    private final RedisTemplate<String, String> redisTemplate;
+    public static final String USERS_SET_NAME = "users";
 
     public boolean checkOwnership(Authentication authentication, String username) {
         log.info("Authentication name: {}", authentication.getName());
@@ -28,6 +31,18 @@ public class UserSecurity {
         log.info(httpServletRequest.getMethod());
         log.info("IS USER IN ROLE_USER: {}", httpServletRequest.isUserInRole("ROLE_USER"));
         return httpServletRequest.getMethod().equals("GET");
+    }
+
+    public void addUserToBlacklist(String username) {
+        redisTemplate.opsForSet().add(USERS_SET_NAME, username);
+    }
+
+    public void removeUserFromBlacklist(String username) {
+        redisTemplate.opsForSet().remove(USERS_SET_NAME, username);
+    }
+
+    public boolean isUserBlacklisted(String username) {
+        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(USERS_SET_NAME, username));
     }
 
 }

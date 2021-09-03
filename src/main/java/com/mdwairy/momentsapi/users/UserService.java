@@ -20,11 +20,11 @@ public interface UserService extends UserDetailsService {
 
     void updateFirstName(String username, String firstname);
     void updateLastName(String username, String lastName);
-    void updateUsername(String username, String newUsername); // INVALIDATE TOKEN
-    void updatePassword(String username,String oldPassword, String newPassword); // INVALIDATE TOKEN
+    void updateUsername(String username, String newUsername, String accessToken);
+    void updatePassword(String username,String oldPassword, String newPassword);
 
     @PreAuthorize("hasRole('ADMIN')")
-    void updateUserRole(String username, String role); // INVALIDATE TOKEN
+    void updateUserRole(String username, String role);
 
     void deleteByUsername(String username);
 

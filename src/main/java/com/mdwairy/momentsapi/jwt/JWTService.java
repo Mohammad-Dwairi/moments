@@ -23,9 +23,11 @@ import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.INVALID_T
 public class JWTService {
 
     private final Algorithm algorithm;
+    private final JWTRepository jwtRepository;
 
-    public JWTService(@Value("${spring.mail.password}") String secret) {
+    public JWTService(@Value("${spring.mail.password}") String secret, JWTRepository jwtRepository) {
         this.algorithm = Algorithm.HMAC256(secret.getBytes());
+        this.jwtRepository = jwtRepository;
     }
 
     public String getAccessToken(UserPrincipal userPrincipal) {
@@ -59,7 +61,7 @@ public class JWTService {
     }
 
     public String getUsernameFromToken(String token) {
-        DecodedJWT decodedJWT = decodeToken(token);
+        DecodedJWT decodedJWT = verifyToken(token);
         return decodedJWT.getSubject();
     }
 
@@ -71,12 +73,21 @@ public class JWTService {
     }
 
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
-        String username = getUsernameFromToken(token);
+        DecodedJWT verifiedToken = verifyToken(token);
+        String username = verifiedToken.getSubject();
         List<SimpleGrantedAuthority> authorities = this.getAuthoritiesFromToken(token);
         return new UsernamePasswordAuthenticationToken(username, null, authorities);
     }
 
-    private DecodedJWT decodeToken(String token) {
+    public void addTokenToBlacklist(String accessToken) {
+        jwtRepository.save(accessToken);
+    }
+
+    public boolean isTokenInBlacklist(String token) {
+        return jwtRepository.isExists(token);
+    }
+
+    private DecodedJWT verifyToken(String token) {
         JWTVerifier verifier = this.getJWTVerifier();
         return verifier.verify(token);
     }
@@ -88,7 +99,7 @@ public class JWTService {
     }
 
     private List<SimpleGrantedAuthority> getAuthoritiesFromToken(String token) {
-        return decodeToken(token).getClaim(AUTHORITIES).asList(SimpleGrantedAuthority.class);
+        return verifyToken(token).getClaim(AUTHORITIES).asList(SimpleGrantedAuthority.class);
     }
 
     private JWTVerifier getJWTVerifier() {
