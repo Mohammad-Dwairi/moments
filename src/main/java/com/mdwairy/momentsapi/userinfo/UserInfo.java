@@ -62,4 +62,12 @@ public class UserInfo extends BaseEntity {
         work.setUserInfo(this);
     }
 
+    public void addEducation(Education education) {
+        if (this.educationList == null) {
+            this.educationList = new ArrayList<>();
+        }
+        this.educationList.add(education);
+        education.setUserInfo(this);
+    }
+
 }

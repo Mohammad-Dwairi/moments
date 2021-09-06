@@ -25,8 +25,13 @@ public abstract class InfoEntity {
     protected UserInfo userInfo;
 
     @JsonProperty(access = READ_ONLY)
-    protected Date createdAt = new Date();
+    protected Date createdAt;
 
     @JsonProperty(access = WRITE_ONLY)
     protected Boolean isVisible;
+
+    public InfoEntity() {
+        this.createdAt = new Date();
+        this.isVisible = true;
+    }
 }
