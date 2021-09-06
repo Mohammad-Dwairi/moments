@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static com.mdwairy.momentsapi.constant.AppExceptionMessage.RESOURCE_NOT_FOUND;
 import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.ACCESS_DENIED;
+import static com.mdwairy.momentsapi.users.UserRole.ROLE_ADMIN;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
@@ -40,13 +41,13 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public Work findWork(Long id, String username) {
+    public Work findById(Long id, String username) {
 
         Optional<Work> workOptional = workRepository.findById(id);
         if (workOptional.isPresent()) {
             Work work = workOptional.get();
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication.getName().equals(username) || work.getIsVisible()) {
+            if (authentication.getName().equals(username) || work.getIsVisible() || authentication.getAuthorities().contains(ROLE_ADMIN)) {
                 return work;
             } else {
                 throw new AccessDeniedException(ACCESS_DENIED);
@@ -57,14 +58,14 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public Work addWork(Work work, String username) {
+    public Work add(Work work, String username) {
         UserInfo userInfo = userService.findByUsername(username).getUserInfo();
         userInfo.addWork(work);
         return workRepository.save(work);
     }
 
     @Override
-    public Work updateVisibility(long id, boolean isVisible) {
+    public Work updateVisibility(Long id, boolean isVisible) {
         Optional<Work> workOptional = workRepository.findById(id);
         if (workOptional.isPresent()) {
             Work work = workOptional.get();
@@ -130,12 +131,11 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public void deleteWork(Long id, String username) {
+    public void deleteById(Long id) {
         Optional<Work> workOptional = workRepository.findById(id);
         if (workOptional.isPresent()) {
             workRepository.deleteById(id);
-        }
-        else {
+        } else {
             throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
         }
     }
