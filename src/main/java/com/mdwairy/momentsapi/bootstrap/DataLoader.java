@@ -1,10 +1,6 @@
 package com.mdwairy.momentsapi.bootstrap;
 
-import com.mdwairy.momentsapi.app.userdetails.AppUserDetails;
-import com.mdwairy.momentsapi.registration.RegistrationRequest;
-import com.mdwairy.momentsapi.registration.RegistrationService;
 import com.mdwairy.momentsapi.users.User;
-import com.mdwairy.momentsapi.users.UserRole;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

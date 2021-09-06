@@ -10,5 +10,5 @@ public class UserDto {
     private String username;
     private String email;
     private UserRole role;
-    private Long detailsId;
+    private Long infoId;
 }

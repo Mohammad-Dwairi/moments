@@ -11,6 +11,6 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    @Mapping(target = "detailsId", source = "appUserDetails.id")
+    @Mapping(target = "infoId", source = "userInfo.id")
     UserDto userToUserDto(User user);
 }

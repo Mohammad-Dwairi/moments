@@ -1,6 +1,6 @@
 package com.mdwairy.momentsapi.users;
 
-import com.mdwairy.momentsapi.app.userdetails.AppUserDetailsRepository;
+import com.mdwairy.momentsapi.userinfo.UserInfoRepository;
 import com.mdwairy.momentsapi.exception.InvalidJsonValueException;
 import com.mdwairy.momentsapi.jwt.JWTService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,15 +31,15 @@ import static com.mdwairy.momentsapi.users.UserRole.ROLE_USER;
 public class UserServiceJPA implements UserService {
 
     private final UserRepository userRepository;
-    private final AppUserDetailsRepository detailsRepository;
+    private final UserInfoRepository userInfoRepository;
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final UserSecurity userSecurity;
 
-    public UserServiceJPA(UserRepository userRepository, AppUserDetailsRepository detailsRepository,
+    public UserServiceJPA(UserRepository userRepository, UserInfoRepository userInfoRepository,
                           JWTService jwtService, @Lazy PasswordEncoder passwordEncoder, UserSecurity userSecurity) {
         this.userRepository = userRepository;
-        this.detailsRepository = detailsRepository;
+        this.userInfoRepository = userInfoRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.userSecurity = userSecurity;
@@ -89,7 +89,7 @@ public class UserServiceJPA implements UserService {
 
     @Override
     public void register(@Valid User user) {
-        detailsRepository.save(user.getAppUserDetails());
+        userInfoRepository.save(user.getUserInfo());
         userRepository.save(user);
     }
 

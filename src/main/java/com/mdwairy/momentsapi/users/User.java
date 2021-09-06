@@ -1,7 +1,6 @@
 package com.mdwairy.momentsapi.users;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mdwairy.momentsapi.app.userdetails.AppUserDetails;
+import com.mdwairy.momentsapi.userinfo.UserInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -57,7 +56,7 @@ public class User implements Serializable {
     private UserRole role;
 
     @OneToOne
-    private AppUserDetails appUserDetails = new AppUserDetails();
+    private UserInfo userInfo = new UserInfo();
 
     public User(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
