@@ -87,4 +87,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = {ResourceNotFoundException.class})
+    public ResponseEntity<Object> notFoundExceptionHandler(ResourceNotFoundException e) {
+        errorResponse.setStatus(NOT_FOUND.value());
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setTimestamp(currentTimeMillis());
+        return new ResponseEntity<>(errorResponse, NOT_FOUND);
+    }
+
 }
