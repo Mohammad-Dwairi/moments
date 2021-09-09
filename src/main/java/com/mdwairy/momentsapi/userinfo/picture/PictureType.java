@@ -1,6 +1,5 @@
 package com.mdwairy.momentsapi.userinfo.picture;
 
 public enum PictureType {
-
-    PROFILE, COVER
+    PROFILE, COVER, POST, HIGHLIGHT
 }

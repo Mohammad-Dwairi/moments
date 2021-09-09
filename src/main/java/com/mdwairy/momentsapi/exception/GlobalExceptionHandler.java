@@ -1,12 +1,17 @@
 package com.mdwairy.momentsapi.exception;
 
+import com.mdwairy.momentsapi.constant.AppExceptionMessage;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.mail.MessagingException;
+import javax.validation.ConstraintViolationException;
 
+import static com.mdwairy.momentsapi.constant.AppExceptionMessage.INVALID_HTTP_MESSAGE;
 import static java.lang.System.currentTimeMillis;
 import static org.springframework.http.HttpStatus.*;
 
@@ -93,6 +98,22 @@ public class GlobalExceptionHandler {
         errorResponse.setMessage(e.getMessage());
         errorResponse.setTimestamp(currentTimeMillis());
         return new ResponseEntity<>(errorResponse, NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {HttpMessageNotReadableException.class})
+    public ResponseEntity<Object> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
+        errorResponse.setMessage(INVALID_HTTP_MESSAGE);
+        errorResponse.setTimestamp(currentTimeMillis());
+        errorResponse.setStatus(BAD_REQUEST.value());
+        return new ResponseEntity<>(errorResponse, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class, ConstraintViolationException.class})
+    public ResponseEntity<Object> httpRequestMethodNotSupportedExceptionHandler(RuntimeException e) {
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setTimestamp(currentTimeMillis());
+        errorResponse.setStatus(BAD_REQUEST.value());
+        return new ResponseEntity<>(errorResponse, BAD_REQUEST);
     }
 
 }

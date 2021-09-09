@@ -2,7 +2,7 @@ package com.mdwairy.momentsapi.userinfo.infoentity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mdwairy.momentsapi.userinfo.UserInfo;
+import com.mdwairy.momentsapi.users.User;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -22,7 +22,7 @@ public abstract class InfoEntity {
 
     @OneToOne
     @JsonIgnore
-    protected UserInfo userInfo;
+    protected User user;
 
     @JsonProperty(access = READ_ONLY)
     protected Date createdAt;
