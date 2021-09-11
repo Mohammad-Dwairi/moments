@@ -6,10 +6,15 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mdwairy.momentsapi.exception.JWTException;
 import com.mdwairy.momentsapi.users.UserPrincipal;
+import com.mdwairy.momentsapi.users.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,15 +24,18 @@ import java.util.stream.Collectors;
 import static com.mdwairy.momentsapi.constant.JWTConstant.*;
 import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.INVALID_TOKEN;
 
+@Slf4j
 @Service
 public class JWTService {
 
     private final Algorithm algorithm;
     private final JWTRepository jwtRepository;
+    private final UserService userService;
 
-    public JWTService(@Value("${spring.mail.password}") String secret, JWTRepository jwtRepository) {
+    public JWTService(@Value("${spring.mail.password}") String secret, JWTRepository jwtRepository, @Lazy UserService userService) {
         this.algorithm = Algorithm.HMAC256(secret.getBytes());
         this.jwtRepository = jwtRepository;
+        this.userService = userService;
     }
 
     public String getAccessToken(UserPrincipal userPrincipal) {
@@ -75,8 +83,10 @@ public class JWTService {
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         DecodedJWT verifiedToken = verifyToken(token);
         String username = verifiedToken.getSubject();
+        UserPrincipal userPrincipal = (UserPrincipal) userService.loadUserByUsername(username);
+        log.info("Email: {}", userPrincipal.getUser().getEmail());
         List<SimpleGrantedAuthority> authorities = this.getAuthoritiesFromToken(token);
-        return new UsernamePasswordAuthenticationToken(username, null, authorities);
+        return new UsernamePasswordAuthenticationToken(userPrincipal, null, authorities);
     }
 
     public void addTokenToBlacklist(String accessToken) {
