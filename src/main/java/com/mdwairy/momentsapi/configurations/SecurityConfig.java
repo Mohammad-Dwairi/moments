@@ -1,8 +1,8 @@
 package com.mdwairy.momentsapi.configurations;
 
+import com.mdwairy.momentsapi.filter.AppAuthenticationEntryPoint;
 import com.mdwairy.momentsapi.filter.AppAuthenticationFilter;
 import com.mdwairy.momentsapi.filter.AppAuthorizationFilter;
-import com.mdwairy.momentsapi.filter.AppAuthenticationEntryPoint;
 import com.mdwairy.momentsapi.handler.AppAccessDeniedHandler;
 import com.mdwairy.momentsapi.handler.AppAuthenticationFailureHandler;
 import com.mdwairy.momentsapi.handler.AppAuthenticationSuccessHandler;
@@ -18,7 +18,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -39,14 +38,13 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
         jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
     private final UserService userService;
     private final JWTService jwtService;
     private final UserSecurity userSecurity;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
     }
 
     @Override
