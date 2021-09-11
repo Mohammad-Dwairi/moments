@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,10 @@ public class UserSecurity {
         log.info(httpServletRequest.getMethod());
         log.info("IS USER IN ROLE_USER: {}", httpServletRequest.isUserInRole("ROLE_USER"));
         return httpServletRequest.getMethod().equals("GET");
+    }
+
+    public UserPrincipal getUserPrinciple() {
+        return (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     public void addUserToBlacklist(String username) {
