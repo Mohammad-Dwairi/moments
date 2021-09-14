@@ -9,7 +9,8 @@ import javax.persistence.*;
 import java.util.Date;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
+import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.PUBLIC;
+import static javax.persistence.EnumType.STRING;
 
 @Data
 @MappedSuperclass
@@ -27,11 +28,11 @@ public abstract class InfoEntity {
     @JsonProperty(access = READ_ONLY)
     protected Date createdAt;
 
-    @JsonProperty(access = WRITE_ONLY)
-    protected Boolean isVisible;
+    @Enumerated(STRING)
+    protected InfoEntityVisibility visibility;
 
     public InfoEntity() {
         this.createdAt = new Date();
-        this.isVisible = true;
+        this.visibility = PUBLIC;
     }
 }

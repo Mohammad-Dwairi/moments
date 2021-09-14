@@ -1,6 +1,7 @@
 package com.mdwairy.momentsapi.userinfo.education;
 
 import com.mdwairy.momentsapi.exception.InvalidJsonKeyException;
+import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,6 +69,15 @@ public class EducationController {
         String KEY = "type";
         if (body.containsKey(KEY)) {
             return educationService.updateEducationType(id, body.get(KEY));
+        }
+        throw new InvalidJsonKeyException(INVALID_JSON_KEY);
+    }
+
+    @PatchMapping("/{id}/visibility")
+    public Education updateEducationVisibility(@PathVariable Long id, @RequestBody Map<String, InfoEntityVisibility> body) {
+        String KEY = "visibility";
+        if (body.containsKey(KEY)) {
+            return educationService.updateVisibility(id, body.get(KEY));
         }
         throw new InvalidJsonKeyException(INVALID_JSON_KEY);
     }

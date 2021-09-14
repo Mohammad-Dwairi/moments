@@ -13,7 +13,8 @@ public interface PictureRepository extends CrudRepository<Picture, Long> {
             "ORDER BY picture.createdAt DESC")
     List<Picture> findAllByType(String username, PictureType type);
 
-    @Query("SELECT p FROM Picture p WHERE (p.user.username = ?1) AND (p.isVisible = true or p.user.username = ?2) ORDER BY p.createdAt DESC")
+    // TODO: CHANGE p.visibility to fully qualified InfoVisibility enum name
+    @Query("SELECT p FROM Picture p WHERE (p.user.username = ?1) AND (p.visibility = 'PUBLIC' or p.user.username = ?2) ORDER BY p.createdAt DESC")
     List<Picture> findAllByUsername(String username, String authName);
 
 }

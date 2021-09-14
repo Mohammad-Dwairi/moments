@@ -2,6 +2,7 @@ package com.mdwairy.momentsapi.userinfo.education;
 
 import com.mdwairy.momentsapi.exception.ResourceNotFoundException;
 import com.mdwairy.momentsapi.userinfo.UserInfo;
+import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.mdwairy.momentsapi.constant.AppExceptionMessage.RESOURCE_NOT_FOUND;
 import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.ACCESS_DENIED;
+import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.PUBLIC;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class EducationServiceImpl implements EducationService {
         if (educationList == null) {
             return Collections.emptyList();
         }
-        return educationList.stream().filter(e -> e.getIsVisible() || username.equals(authenticationName)).collect(Collectors.toList());
+        return educationList.stream().filter(e -> e.getVisibility() == PUBLIC || username.equals(authenticationName)).collect(Collectors.toList());
     }
 
     @Override
@@ -40,7 +42,7 @@ public class EducationServiceImpl implements EducationService {
         if (educationOptional.isPresent()) {
             Education education = educationOptional.get();
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (education.getIsVisible() || authentication.getName().equals(username)) {
+            if (education.getVisibility() == PUBLIC || authentication.getName().equals(username)) {
                 return education;
             }
             else {
@@ -58,11 +60,11 @@ public class EducationServiceImpl implements EducationService {
     }
 
     @Override
-    public Education updateVisibility(Long id, boolean isVisible) {
+    public Education updateVisibility(Long id, InfoEntityVisibility visibility) {
         Optional<Education> educationOptional = educationRepository.findById(id);
         if (educationOptional.isPresent()) {
             Education education = educationOptional.get();
-            education.setIsVisible(isVisible);
+            education.setVisibility(visibility);
             return educationRepository.save(education);
         }
         throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);

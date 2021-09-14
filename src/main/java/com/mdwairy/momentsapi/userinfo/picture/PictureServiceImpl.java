@@ -2,6 +2,7 @@ package com.mdwairy.momentsapi.userinfo.picture;
 
 import com.mdwairy.momentsapi.exception.ResourceNotFoundException;
 import com.mdwairy.momentsapi.userinfo.UserInfo;
+import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.mdwairy.momentsapi.constant.AppExceptionMessage.RESOURCE_NOT_FOUND;
+import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.PUBLIC;
 
 @Slf4j
 @Service
@@ -38,7 +40,7 @@ public class PictureServiceImpl implements PictureService {
             return Collections.emptyList();
         }
         String authName = SecurityContextHolder.getContext().getAuthentication().getName();
-        return pictures.stream().filter(picture -> picture.getIsVisible() || authName.equals(username)).collect(Collectors.toList());
+        return pictures.stream().filter(picture -> picture.getVisibility() == PUBLIC || authName.equals(username)).collect(Collectors.toList());
     }
 
     @Override
@@ -47,7 +49,7 @@ public class PictureServiceImpl implements PictureService {
         if (pictureOptional.isPresent()) {
             Picture picture = pictureOptional.get();
             String authName = SecurityContextHolder.getContext().getAuthentication().getName();
-            if (picture.getIsVisible() || username.equals(authName)) {
+            if (picture.getVisibility() == PUBLIC || username.equals(authName)) {
                 return picture;
             }
             throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
@@ -63,11 +65,11 @@ public class PictureServiceImpl implements PictureService {
     }
 
     @Override
-    public Picture updateVisibility(Long id, boolean isVisible) {
+    public Picture updateVisibility(Long id, InfoEntityVisibility visibility) {
         Optional<Picture> profilePictureOptional = pictureRepository.findById(id);
         if (profilePictureOptional.isPresent()) {
             Picture picture = profilePictureOptional.get();
-            picture.setIsVisible(isVisible);
+            picture.setVisibility(visibility);
             return picture;
         }
         throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);

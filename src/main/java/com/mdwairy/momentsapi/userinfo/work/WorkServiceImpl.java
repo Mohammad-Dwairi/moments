@@ -2,6 +2,7 @@ package com.mdwairy.momentsapi.userinfo.work;
 
 import com.mdwairy.momentsapi.exception.ResourceNotFoundException;
 import com.mdwairy.momentsapi.userinfo.UserInfo;
+import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 import static com.mdwairy.momentsapi.constant.AppExceptionMessage.RESOURCE_NOT_FOUND;
 import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.ACCESS_DENIED;
+import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.PUBLIC;
 import static com.mdwairy.momentsapi.users.UserRole.ROLE_ADMIN;
 import static java.util.stream.Collectors.toList;
 
@@ -37,7 +39,7 @@ public class WorkServiceImpl implements WorkService {
             return Collections.emptyList();
         }
         String authenticationName = SecurityContextHolder.getContext().getAuthentication().getName();
-        return workList.stream().filter(work -> work.getIsVisible() || authenticationName.equals(username)).collect(toList());
+        return workList.stream().filter(work -> work.getVisibility() == PUBLIC || authenticationName.equals(username)).collect(toList());
     }
 
     @Override
@@ -47,7 +49,7 @@ public class WorkServiceImpl implements WorkService {
         if (workOptional.isPresent()) {
             Work work = workOptional.get();
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication.getName().equals(username) || work.getIsVisible() || authentication.getAuthorities().contains(ROLE_ADMIN)) {
+            if (authentication.getName().equals(username) || work.getVisibility() == PUBLIC || authentication.getAuthorities().contains(ROLE_ADMIN)) {
                 return work;
             } else {
                 throw new AccessDeniedException(ACCESS_DENIED);
@@ -65,11 +67,11 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public Work updateVisibility(Long id, boolean isVisible) {
+    public Work updateVisibility(Long id, InfoEntityVisibility visibility) {
         Optional<Work> workOptional = workRepository.findById(id);
         if (workOptional.isPresent()) {
             Work work = workOptional.get();
-            work.setIsVisible(isVisible);
+            work.setVisibility(visibility);
             return workRepository.save(work);
         }
         throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);

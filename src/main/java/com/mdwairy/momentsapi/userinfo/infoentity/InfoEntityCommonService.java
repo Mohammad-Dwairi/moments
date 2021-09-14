@@ -7,7 +7,7 @@ public interface InfoEntityCommonService<Type extends InfoEntity, ID extends Lon
     List<Type> findAll(String username);
     Type findById(ID id, String username);
     Type add(Type type, String username);
-    Type updateVisibility(ID id, boolean isVisible);
+    Type updateVisibility(ID id, InfoEntityVisibility isVisible);
     void deleteById(ID id);
 
 }
