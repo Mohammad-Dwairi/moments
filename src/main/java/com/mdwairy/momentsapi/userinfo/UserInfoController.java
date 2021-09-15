@@ -27,37 +27,37 @@ public class UserInfoController {
     }
 
     @PatchMapping("/country")
-    public UserInfoDTO updateCurrentCountry(@PathVariable String username, @RequestBody Map<String, String> body) {
+    public UserInfoDTO updateCurrentCountry(@RequestBody Map<String, String> body) {
         String KEY = "country";
         if (body.containsKey(KEY)) {
-            return UserInfoMapper.INSTANCE.userInfoToUserInfoDto(userInfoService.updateCurrentCountry(username, body.get(KEY)));
+            return UserInfoMapper.INSTANCE.userInfoToUserInfoDto(userInfoService.updateCurrentCountry(body.get(KEY)));
         }
         throw new InvalidJsonKeyException(INVALID_JSON_KEY);
     }
 
     @PatchMapping("/city")
-    public UserInfoDTO updateCurrentCity(@PathVariable String username, @RequestBody Map<String, String> body) {
+    public UserInfoDTO updateCurrentCity(@RequestBody Map<String, String> body) {
         String KEY = "city";
         if (body.containsKey(KEY)) {
-            return UserInfoMapper.INSTANCE.userInfoToUserInfoDto(userInfoService.updateCurrentCity(username, body.get(KEY)));
+            return UserInfoMapper.INSTANCE.userInfoToUserInfoDto(userInfoService.updateCurrentCity(body.get(KEY)));
         }
         throw new InvalidJsonKeyException(INVALID_JSON_KEY);
     }
 
     @PatchMapping("/nationality")
-    public UserInfoDTO updateNationality(@PathVariable String username, @RequestBody Map<String, String> body) {
+    public UserInfoDTO updateNationality(@RequestBody Map<String, String> body) {
         String KEY = "nationality";
         if (body.containsKey(KEY)) {
-            return UserInfoMapper.INSTANCE.userInfoToUserInfoDto(userInfoService.updateNationality(username, body.get(KEY)));
+            return UserInfoMapper.INSTANCE.userInfoToUserInfoDto(userInfoService.updateNationality(body.get(KEY)));
         }
         throw new InvalidJsonKeyException(INVALID_JSON_KEY);
     }
 
     @PatchMapping("/bio")
-    public UserInfoDTO updateBio(@PathVariable String username, @RequestBody Map<String, String> body) {
+    public UserInfoDTO updateBio(@RequestBody Map<String, String> body) {
         String KEY = "bio";
         if (body.containsKey(KEY)) {
-            return UserInfoMapper.INSTANCE.userInfoToUserInfoDto(userInfoService.updateBio(username, body.get(KEY)));
+            return UserInfoMapper.INSTANCE.userInfoToUserInfoDto(userInfoService.updateBio(body.get(KEY)));
         }
         throw new InvalidJsonKeyException(INVALID_JSON_KEY);
     }

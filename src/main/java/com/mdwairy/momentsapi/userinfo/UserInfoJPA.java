@@ -20,29 +20,29 @@ public class UserInfoJPA implements UserInfoService {
     }
 
     @Override
-    public UserInfo updateCurrentCountry(String username, String country) {
-        UserInfo userInfo = userService.findByUsername(username).getUserInfo();
+    public UserInfo updateCurrentCountry(String country) {
+        UserInfo userInfo = userSecurity.getUserPrinciple().getUserInfo();
         userInfo.setCurrentCountry(country);
         return userInfoRepository.save(userInfo);
     }
 
     @Override
-    public UserInfo updateCurrentCity(String username, String city) {
-        UserInfo userInfo = userService.findByUsername(username).getUserInfo();
+    public UserInfo updateCurrentCity(String city) {
+        UserInfo userInfo = userSecurity.getUserPrinciple().getUserInfo();
         userInfo.setCurrentCity(city);
         return userInfoRepository.save(userInfo);
     }
 
     @Override
-    public UserInfo updateNationality(String username, String nationality) {
-        UserInfo userInfo = userService.findByUsername(username).getUserInfo();
+    public UserInfo updateNationality(String nationality) {
+        UserInfo userInfo = userSecurity.getUserPrinciple().getUserInfo();
         userInfo.setNationality(nationality);
         return userInfoRepository.save(userInfo);
     }
 
     @Override
-    public UserInfo updateBio(String username, String bio) {
-        UserInfo userInfo = userService.findByUsername(username).getUserInfo();
+    public UserInfo updateBio(String bio) {
+        UserInfo userInfo = userSecurity.getUserPrinciple().getUserInfo();
         userInfo.setBio(bio);
         return userInfoRepository.save(userInfo);
     }
