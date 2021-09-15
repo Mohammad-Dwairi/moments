@@ -1,5 +1,7 @@
 package com.mdwairy.momentsapi.userinfo;
 
+import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
+import com.mdwairy.momentsapi.users.UserSecurity;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ public class UserInfoJPA implements UserInfoService {
 
     private final UserInfoRepository userInfoRepository;
     private final UserService userService;
+    private final UserSecurity userSecurity;
 
     @Override
     public UserInfo findUserInfo(String username) {
@@ -41,6 +44,13 @@ public class UserInfoJPA implements UserInfoService {
     public UserInfo updateBio(String username, String bio) {
         UserInfo userInfo = userService.findByUsername(username).getUserInfo();
         userInfo.setBio(bio);
+        return userInfoRepository.save(userInfo);
+    }
+
+    @Override
+    public UserInfo updateFriendsVisibility(InfoEntityVisibility visibility) {
+        UserInfo userInfo = userSecurity.getUserPrinciple().getUserInfo();
+        userInfo.setFriendsVisibility(visibility);
         return userInfoRepository.save(userInfo);
     }
 

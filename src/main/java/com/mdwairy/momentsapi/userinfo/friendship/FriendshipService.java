@@ -1,13 +1,26 @@
 package com.mdwairy.momentsapi.userinfo.friendship;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 public interface FriendshipService {
-    List<Friendship> findAll();
-    List<Friendship> findAllSentAndPendingFriendships();
-    List<Friendship> findAllReceivedAndPendingFriendships();
-    List<Friendship> findAllFriends();
-    Friendship createNewFriendship(String receiverUsername);
-    Friendship acceptFriendship(String senderUsername);
-    void rejectFriendship(String senderUsername);
+
+    List<Friendship> findAllFriends(String username);
+
+    @PreAuthorize("@userSecurity.checkOwnership(#username)")
+    List<Friendship> findAllSentAndPendingFriendships(@NotBlank String username);
+
+    @PreAuthorize("@userSecurity.checkOwnership(#username)")
+    List<Friendship> findAllReceivedAndPendingFriendships(@NotBlank String username);
+
+    @PreAuthorize("@userSecurity.checkOwnership(#username)")
+    Friendship createNewFriendship(@NotBlank String username, @NotBlank String receiverUsername);
+
+    @PreAuthorize("@userSecurity.checkOwnership(#username)")
+    Friendship acceptFriendship(@NotBlank String username, @NotBlank String senderUsername);
+
+    @PreAuthorize("@userSecurity.checkOwnership(#username)")
+    void deleteFriendship(@NotBlank String username, @NotBlank String friendUsername);
 }

@@ -1,6 +1,5 @@
 package com.mdwairy.momentsapi.exception;
 
-import com.mdwairy.momentsapi.constant.AppExceptionMessage;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -60,8 +59,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, UNAUTHORIZED);
     }
 
-    @ExceptionHandler(value = {FriendRequestException.class})
-    public ResponseEntity<Object> friendRequestsExceptionHandler(FriendRequestException e) {
+    @ExceptionHandler(value = {FriendshipException.class})
+    public ResponseEntity<Object> friendRequestsExceptionHandler(FriendshipException e) {
         errorResponse.setStatus(BAD_REQUEST.value());
         errorResponse.setMessage(e.getMessage());
         errorResponse.setTimestamp(currentTimeMillis());
@@ -114,6 +113,14 @@ public class GlobalExceptionHandler {
         errorResponse.setTimestamp(currentTimeMillis());
         errorResponse.setStatus(BAD_REQUEST.value());
         return new ResponseEntity<>(errorResponse, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {InvalidRequestParamValue.class})
+    public ResponseEntity<Object> invalidRequestParamHandler(InvalidRequestParamValue e) {
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setTimestamp(currentTimeMillis());
+        errorResponse.setStatus(NOT_FOUND.value());
+        return new ResponseEntity<>(errorResponse, NOT_FOUND);
     }
 
 }

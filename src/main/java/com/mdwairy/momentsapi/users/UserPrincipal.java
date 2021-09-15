@@ -1,5 +1,6 @@
 package com.mdwairy.momentsapi.users;
 
+import com.mdwairy.momentsapi.userinfo.UserInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -51,5 +52,9 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return user.getIsAccountEnabled();
+    }
+
+    public UserInfo getUserInfo() {
+        return user.getUserInfo();
     }
 }

@@ -4,10 +4,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService extends UserDetailsService {
 
     List<User> findAll();
+    List<User> findAllByUsernameIn(Set<String> usernames);
     User findById(Long Id);
     User findByUsername(String username);
     User findByEmail(String email);

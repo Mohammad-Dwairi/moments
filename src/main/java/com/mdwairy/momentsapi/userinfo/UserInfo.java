@@ -2,6 +2,7 @@ package com.mdwairy.momentsapi.userinfo;
 
 import com.mdwairy.momentsapi.app.model.BaseEntity;
 import com.mdwairy.momentsapi.userinfo.education.Education;
+import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import com.mdwairy.momentsapi.userinfo.picture.Picture;
 import com.mdwairy.momentsapi.userinfo.work.Work;
 import com.mdwairy.momentsapi.users.User;
@@ -14,6 +15,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.PUBLIC;
+import static javax.persistence.EnumType.STRING;
 
 @Entity
 @Getter
@@ -50,6 +54,9 @@ public class UserInfo extends BaseEntity {
     private String bio;
 
     private Date joinDate;
+
+    @Enumerated(STRING)
+    private InfoEntityVisibility friendsVisibility = PUBLIC;
 
     public void addWork(Work work) {
         if (this.workList == null) {

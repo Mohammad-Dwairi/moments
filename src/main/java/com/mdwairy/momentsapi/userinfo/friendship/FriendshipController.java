@@ -1,53 +1,55 @@
 package com.mdwairy.momentsapi.userinfo.friendship;
 
+import com.mdwairy.momentsapi.exception.InvalidJsonKeyException;
+import com.mdwairy.momentsapi.exception.InvalidRequestParamValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+import static com.mdwairy.momentsapi.constant.AppExceptionMessage.INVALID_REQUEST_PARAM_VALUE;
+import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.INVALID_JSON_KEY;
+
 @RestController
-@RequestMapping("/friendships")
+@RequestMapping("{username}/friends")
 @RequiredArgsConstructor
 public class FriendshipController {
 
     private final FriendshipService friendshipService;
 
     @GetMapping
-    public List<Friendship> findAll() {
-        return friendshipService.findAll();
+    public List<Friendship> findAllFriends(@PathVariable String username) {
+        return friendshipService.findAllFriends(username);
     }
 
     @GetMapping(params = {"dir"})
-    public List<Friendship> findAllPending(@RequestParam String dir) {
+    public List<Friendship> findAllPending(@RequestParam String dir, @PathVariable String username) {
         if (dir.equals("outgoing")) {
-            return friendshipService.findAllSentAndPendingFriendships();
+            return friendshipService.findAllSentAndPendingFriendships(username);
         } else if (dir.equals("incoming")) {
-            return friendshipService.findAllReceivedAndPendingFriendships();
-        } else {
-            return friendshipService.findAll();
+            return friendshipService.findAllReceivedAndPendingFriendships(username);
         }
+        throw new InvalidRequestParamValue(INVALID_REQUEST_PARAM_VALUE);
     }
 
-    @GetMapping("/friends")
-    public List<Friendship> findAllFriends() {
-        return friendshipService.findAllFriends();
-    }
-
-    @PostMapping("/{receiver}")
-    public Friendship createNewFriendship(@PathVariable String receiver) {
-        return friendshipService.createNewFriendship(receiver);
-    }
-
-    @PatchMapping("/{username}")
-    public Friendship alterFriendship(@RequestBody Map<String, String> body, @PathVariable String username) {
-        if (body.get("action").equalsIgnoreCase("accept")) {
-            return friendshipService.acceptFriendship(username);
-        } else if (body.get("action").equalsIgnoreCase("reject")) {
-            friendshipService.rejectFriendship(username);
-            return null;
+    @PostMapping
+    public Friendship createNewFriendship(@RequestBody Map<String, String> body, @PathVariable String username) {
+        String key = "friendUsername";
+        if (body.containsKey(key)) {
+            return friendshipService.createNewFriendship(username, body.get(key));
         }
-        return null;
+        throw new InvalidJsonKeyException(INVALID_JSON_KEY);
+    }
+
+    @PatchMapping("/{senderUsername}")
+    public Friendship alterFriendship(@PathVariable String senderUsername, @PathVariable String username) {
+        return friendshipService.acceptFriendship(username, senderUsername);
+    }
+
+    @DeleteMapping("/{senderUsername}")
+    public void deleteFriendship(@PathVariable String senderUsername, @PathVariable String username) {
+        friendshipService.deleteFriendship(username, senderUsername);
     }
 
 }

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.AUTHENTICATION_FAILED;
 import static com.mdwairy.momentsapi.constant.SecurityExceptionMessage.INVALID_ROLE;
@@ -59,6 +60,11 @@ public class UserServiceJPA implements UserService {
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> findAllByUsernameIn(Set<String> usernames) {
+        return userRepository.findAllByUsernameIn(usernames);
     }
 
 

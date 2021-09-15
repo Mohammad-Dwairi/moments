@@ -18,7 +18,8 @@ public class UserSecurity {
     private final RedisTemplate<String, String> redisTemplate;
     public static final String USERS_SET_NAME = "users";
 
-    public boolean checkOwnership(Authentication authentication, String username) {
+    public boolean checkOwnership(String username) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Authentication name: {}", authentication.getName());
         log.info("username: {}", username);
         log.info("AUTHORITIES: {}", authentication.getAuthorities());
