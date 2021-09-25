@@ -23,4 +23,6 @@ public interface FriendshipService {
 
     @PreAuthorize("@userSecurity.checkOwnership(#username)")
     void deleteFriendship(@NotBlank String username, @NotBlank String friendUsername);
+
+    boolean checkIfFriends(String username1, String username2);
 }

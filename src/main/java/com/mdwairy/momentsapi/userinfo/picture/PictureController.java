@@ -19,8 +19,8 @@ public class PictureController {
     private final PictureService pictureService;
 
     @GetMapping
-    public List<Picture> findAll(@PathVariable String username) {
-        return pictureService.findAllByUsername(username);
+    public List<Picture> findAllByUser(@PathVariable String username) {
+        return pictureService.findAllByUser(username);
     }
 
     @GetMapping(params = {"type"})

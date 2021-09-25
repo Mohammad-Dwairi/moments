@@ -2,21 +2,21 @@ package com.mdwairy.momentsapi.userinfo.picture;
 
 import com.mdwairy.momentsapi.exception.ResourceNotFoundException;
 import com.mdwairy.momentsapi.userinfo.UserInfo;
+import com.mdwairy.momentsapi.userinfo.friendship.FriendshipService;
 import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
+import com.mdwairy.momentsapi.users.User;
+import com.mdwairy.momentsapi.users.UserSecurity;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.mdwairy.momentsapi.constant.AppExceptionMessage.RESOURCE_NOT_FOUND;
-import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.PUBLIC;
+import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.*;
 
 @Slf4j
 @Service
@@ -26,34 +26,52 @@ public class PictureServiceImpl implements PictureService {
 
     private final PictureRepository pictureRepository;
     private final UserService userService;
+    private final UserSecurity userSecurity;
+    private final FriendshipService friendshipService;
 
     @Override
-    public List<Picture> findAllByUsername(String username) {
-        String authName = SecurityContextHolder.getContext().getAuthentication().getName();
-        return pictureRepository.findAllByUsername(username, authName);
+    public List<Picture> findAllByUser(String username) {
+        User user = userSecurity.getUserPrinciple().getUser();
+        return pictureRepository.findAllByUser(user);
     }
 
     @Override
     public List<Picture> findAllByType(String username, PictureType type) {
-        List<Picture> pictures = pictureRepository.findAllByType(username, type);
-        if (pictures == null) {
-            return Collections.emptyList();
+
+        String authUsername = userSecurity.getUserPrinciple().getUsername();
+        boolean isOwner = authUsername.equals(username);
+
+        if (isOwner) {
+            User user = userSecurity.getUserPrinciple().getUser();
+            return pictureRepository.findAllByUserAndTypeOrderByCreatedAtDesc(user, type);
         }
-        String authName = SecurityContextHolder.getContext().getAuthentication().getName();
-        return pictures.stream().filter(picture -> picture.getVisibility() == PUBLIC || authName.equals(username)).collect(Collectors.toList());
+
+        User user = userService.findByUsername(username);
+        boolean isFriend = friendshipService.checkIfFriends(authUsername, username);
+
+        if (isFriend) {
+            return pictureRepository.findAllByUserAndTypeAndVisibilityIsNotOrderByCreatedAtDesc(user, type, PRIVATE);
+        }
+
+        return pictureRepository.findAllByUserAndTypeAndVisibilityOrderByCreatedAtDesc(user, type, PUBLIC);
     }
 
     @Override
     public Picture findById(String username, Long id) {
-        Optional<Picture> pictureOptional = pictureRepository.findById(id);
-        if (pictureOptional.isPresent()) {
-            Picture picture = pictureOptional.get();
-            String authName = SecurityContextHolder.getContext().getAuthentication().getName();
-            if (picture.getVisibility() == PUBLIC || username.equals(authName)) {
-                return picture;
-            }
-            throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
+
+        String authUsername = userSecurity.getUserPrinciple().getUsername();
+        if (authUsername.equals(username)) {
+            return getPictureForAuthenticatedUser(id);
         }
+
+        Picture picture = getPictureForRequestedUser(username, id);
+        boolean isFriend = friendshipService.checkIfFriends(username, authUsername);
+        InfoEntityVisibility visibility = picture.getVisibility();
+
+        if (isFriend && visibility == FRIENDS || visibility == PUBLIC) {
+            return picture;
+        }
+
         throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
     }
 
@@ -66,22 +84,27 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public Picture updateVisibility(Long id, InfoEntityVisibility visibility) {
-        Optional<Picture> profilePictureOptional = pictureRepository.findById(id);
-        if (profilePictureOptional.isPresent()) {
-            Picture picture = profilePictureOptional.get();
-            picture.setVisibility(visibility);
-            return picture;
-        }
-        throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
+        Picture picture = getPictureForAuthenticatedUser(id);
+        picture.setVisibility(visibility);
+        return picture;
     }
 
     @Override
     public void deletePicture(Long id) {
-        if (pictureRepository.existsById(id)) {
-            pictureRepository.deleteById(id);
-        } else {
-            throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
-        }
+        Picture picture = getPictureForAuthenticatedUser(id);
+        pictureRepository.delete(picture);
+    }
+
+    private Picture getPictureForAuthenticatedUser(long id) {
+        User user = userSecurity.getUserPrinciple().getUser();
+        Optional<Picture> pictureOptional = pictureRepository.findPictureByUserAndId(user, id);
+        return pictureOptional.orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND));
+    }
+
+    private Picture getPictureForRequestedUser(String username, long id) {
+        User user = userService.findByUsername(username);
+        Optional<Picture> pictureOptional = pictureRepository.findPictureByUserAndId(user, id);
+        return pictureOptional.orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND));
     }
 
 }

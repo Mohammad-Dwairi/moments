@@ -28,8 +28,8 @@ public class EducationController {
     }
 
     @PostMapping
-    public Education add(@RequestBody Education education, @PathVariable String username) {
-        return educationService.add(education, username);
+    public Education add(@RequestBody Education education) {
+        return educationService.add(education);
     }
 
     @DeleteMapping("/{id}")

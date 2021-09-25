@@ -1,20 +1,18 @@
 package com.mdwairy.momentsapi.userinfo.picture;
 
-import org.springframework.data.jpa.repository.Query;
+import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
+import com.mdwairy.momentsapi.users.User;
 import org.springframework.data.repository.CrudRepository;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 public interface PictureRepository extends CrudRepository<Picture, Long> {
 
-    @Query(" SELECT picture FROM Picture picture " +
-            "WHERE picture.user.username = ?1 " +
-            "AND picture.type = ?2 " +
-            "ORDER BY picture.createdAt DESC")
-    List<Picture> findAllByType(String username, PictureType type);
-
-    // TODO: CHANGE p.visibility to fully qualified InfoVisibility enum name
-    @Query("SELECT p FROM Picture p WHERE (p.user.username = ?1) AND (p.visibility = 'PUBLIC' or p.user.username = ?2) ORDER BY p.createdAt DESC")
-    List<Picture> findAllByUsername(String username, String authName);
-
+    List<Picture> findAllByUser(User user);
+    List<Picture> findAllByUserAndTypeOrderByCreatedAtDesc(User user, @NotNull(message = "Invalid image type") PictureType type);
+    List<Picture> findAllByUserAndTypeAndVisibilityOrderByCreatedAtDesc(User user, @NotNull(message = "Invalid image type") PictureType type, InfoEntityVisibility visibility);
+    List<Picture> findAllByUserAndTypeAndVisibilityIsNotOrderByCreatedAtDesc(User user, @NotNull(message = "Invalid image type") PictureType type, InfoEntityVisibility visibility);
+    Optional<Picture> findPictureByUserAndId(User user, Long id);
 }

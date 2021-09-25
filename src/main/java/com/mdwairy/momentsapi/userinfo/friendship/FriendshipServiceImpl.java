@@ -72,22 +72,25 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public Friendship acceptFriendship(String username, String senderUsername) {
-        Optional<Friendship> friendshipOptional = friendshipRepository.findById(new FriendshipId(senderUsername, username));
-        if (friendshipOptional.isPresent()) {
-            Friendship friendship = friendshipOptional.get();
-            preFriendshipAccept(friendship);
-            friendship.setStatus(ACCEPTED);
-            return friendshipRepository.save(friendship);
-        }
-        throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
+        Friendship friendship = getFriendshipOrdered(senderUsername, username);
+        preFriendshipAccept(friendship);
+        friendship.setStatus(ACCEPTED);
+        return friendshipRepository.save(friendship);
     }
 
     @Override
     public void deleteFriendship(String username, String friendUsername) {
-        Optional<Friendship> friendshipOptional = friendshipRepository.findByIdNoOrder(username, friendUsername);
-        friendshipOptional.ifPresentOrElse(friendshipRepository::delete, () -> {
-            throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
-        });
+        Friendship friendship = getFriendshipNoOrder(username, friendUsername);
+        friendshipRepository.delete(friendship);
+    }
+
+    public boolean checkIfFriends(String username1, String username2) {
+        try {
+            Friendship friendship = getFriendshipNoOrder(username1, username2);
+            return friendship.getStatus() == ACCEPTED;
+        } catch (ResourceNotFoundException e) {
+            return false; // TODO: TEST
+        }
     }
 
     private void preFriendshipCreation(String username, String friendUsername) {
@@ -127,8 +130,7 @@ public class FriendshipServiceImpl implements FriendshipService {
                 if (!isFriend) {
                     friends.removeIf(friendship -> isUsernameInFriendship(user.getUsername(), friendship));
                 }
-            }
-            else if (visibility == PRIVATE) {
+            } else if (visibility == PRIVATE) {
                 friends.removeIf(friendship -> isUsernameInFriendship(user.getUsername(), friendship));
             }
         }
@@ -143,16 +145,17 @@ public class FriendshipServiceImpl implements FriendshipService {
         }).collect(Collectors.toSet());
     }
 
-    private boolean checkIfFriends(String username1, String username2) {
-        Optional<Friendship> friendshipOptional = friendshipRepository.findByIdNoOrder(username1, username2);
-        if (friendshipOptional.isPresent()) {
-            Friendship friendship = friendshipOptional.get();
-            return friendship.getStatus() == ACCEPTED;
-        }
-        return false;
-    }
-
     private boolean isUsernameInFriendship(String username, Friendship friendship) {
         return friendship.getUsername1().equals(username) || friendship.getUsername2().equals(username);
+    }
+
+    private Friendship getFriendshipOrdered(String senderUsername, String receiverUsername) {
+        Optional<Friendship> friendshipOptional = friendshipRepository.findById(new FriendshipId(senderUsername, receiverUsername));
+        return friendshipOptional.orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND));
+    }
+
+    private Friendship getFriendshipNoOrder(String username1, String username2) {
+        Optional<Friendship> friendshipOptional = friendshipRepository.findByIdNoOrder(username1, username2);
+        return friendshipOptional.orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NOT_FOUND));
     }
 }

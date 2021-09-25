@@ -8,9 +8,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 @Slf4j
 @Component
+@Transactional
 @RequiredArgsConstructor
 public class UserSecurity {
 
@@ -35,6 +37,7 @@ public class UserSecurity {
         return httpServletRequest.getMethod().equals("GET");
     }
 
+    @Transactional
     public UserPrincipal getUserPrinciple() {
         return (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }

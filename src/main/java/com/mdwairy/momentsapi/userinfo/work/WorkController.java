@@ -29,8 +29,8 @@ public class WorkController {
     }
 
     @PostMapping
-    public Work addWork(@RequestBody Work work, @PathVariable String username) {
-        return workService.add(work, username);
+    public Work addWork(@RequestBody Work work) {
+        return workService.add(work);
     }
 
     @PatchMapping("{id}/visibility")
