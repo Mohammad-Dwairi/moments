@@ -1,4 +1,4 @@
-package com.mdwairy.momentsapi.app.model;
+package com.mdwairy.momentsapi.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

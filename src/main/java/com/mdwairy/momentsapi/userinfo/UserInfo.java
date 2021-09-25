@@ -1,6 +1,6 @@
 package com.mdwairy.momentsapi.userinfo;
 
-import com.mdwairy.momentsapi.app.model.BaseEntity;
+import com.mdwairy.momentsapi.model.BaseEntity;
 import com.mdwairy.momentsapi.userinfo.education.Education;
 import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import com.mdwairy.momentsapi.userinfo.picture.Picture;
