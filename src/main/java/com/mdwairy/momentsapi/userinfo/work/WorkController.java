@@ -1,7 +1,7 @@
 package com.mdwairy.momentsapi.userinfo.work;
 
+import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
 import com.mdwairy.momentsapi.exception.InvalidJsonKeyException;
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +34,7 @@ public class WorkController {
     }
 
     @PatchMapping("{id}/visibility")
-    public Work updateVisibility(@RequestBody Map<String, InfoEntityVisibility> body, @PathVariable Long id) {
+    public Work updateVisibility(@RequestBody Map<String, AppEntityVisibility> body, @PathVariable Long id) {
         final String KEY = "visibility";
         if (body.containsKey(KEY)) {
             return workService.updateVisibility(id, body.get(KEY));

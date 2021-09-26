@@ -1,6 +1,6 @@
 package com.mdwairy.momentsapi.userinfo;
 
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
+import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
 
 public interface UserInfoService {
 
@@ -9,5 +9,5 @@ public interface UserInfoService {
     UserInfo updateCurrentCity(String city);
     UserInfo updateNationality(String nationality);
     UserInfo updateBio(String bio);
-    UserInfo updateFriendsVisibility(InfoEntityVisibility visibility);
+    UserInfo updateFriendsVisibility(AppEntityVisibility visibility);
 }

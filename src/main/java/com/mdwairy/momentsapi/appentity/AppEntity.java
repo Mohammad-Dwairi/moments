@@ -1,4 +1,4 @@
-package com.mdwairy.momentsapi.userinfo.infoentity;
+package com.mdwairy.momentsapi.appentity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,13 +9,11 @@ import javax.persistence.*;
 import java.util.Date;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
-import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.PUBLIC;
 import static javax.persistence.EnumType.STRING;
 
 @Data
 @MappedSuperclass
-public abstract class InfoEntity {
-
+public class AppEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
@@ -29,10 +27,10 @@ public abstract class InfoEntity {
     protected Date createdAt;
 
     @Enumerated(STRING)
-    protected InfoEntityVisibility visibility;
+    protected AppEntityVisibility visibility;
 
-    public InfoEntity() {
+    public AppEntity() {
         this.createdAt = new Date();
-        this.visibility = PUBLIC;
+        this.visibility = AppEntityVisibility.PUBLIC;
     }
 }

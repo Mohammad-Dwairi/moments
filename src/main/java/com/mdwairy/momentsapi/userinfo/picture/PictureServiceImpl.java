@@ -1,9 +1,9 @@
 package com.mdwairy.momentsapi.userinfo.picture;
 
+import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
 import com.mdwairy.momentsapi.exception.ResourceNotFoundException;
+import com.mdwairy.momentsapi.friendship.FriendshipService;
 import com.mdwairy.momentsapi.userinfo.UserInfo;
-import com.mdwairy.momentsapi.userinfo.friendship.FriendshipService;
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserSecurity;
 import com.mdwairy.momentsapi.users.UserService;
@@ -15,8 +15,8 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static com.mdwairy.momentsapi.appentity.AppEntityVisibility.*;
 import static com.mdwairy.momentsapi.constant.AppExceptionMessage.RESOURCE_NOT_FOUND;
-import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.*;
 
 @Slf4j
 @Service
@@ -66,7 +66,7 @@ public class PictureServiceImpl implements PictureService {
 
         Picture picture = getPictureForRequestedUser(username, id);
         boolean isFriend = friendshipService.checkIfFriends(username, authUsername);
-        InfoEntityVisibility visibility = picture.getVisibility();
+        AppEntityVisibility visibility = picture.getVisibility();
 
         if (isFriend && visibility == FRIENDS || visibility == PUBLIC) {
             return picture;
@@ -83,7 +83,7 @@ public class PictureServiceImpl implements PictureService {
     }
 
     @Override
-    public Picture updateVisibility(Long id, InfoEntityVisibility visibility) {
+    public Picture updateVisibility(Long id, AppEntityVisibility visibility) {
         Picture picture = getPictureForAuthenticatedUser(id);
         picture.setVisibility(visibility);
         return picture;

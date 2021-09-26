@@ -1,8 +1,8 @@
-package com.mdwairy.momentsapi.userinfo.friendship;
+package com.mdwairy.momentsapi.friendship;
 
+import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
 import com.mdwairy.momentsapi.exception.FriendshipException;
 import com.mdwairy.momentsapi.exception.ResourceNotFoundException;
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserSecurity;
 import com.mdwairy.momentsapi.users.UserService;
@@ -16,9 +16,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.mdwairy.momentsapi.appentity.AppEntityVisibility.*;
 import static com.mdwairy.momentsapi.constant.AppExceptionMessage.*;
-import static com.mdwairy.momentsapi.userinfo.friendship.FriendshipStatus.*;
-import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     public List<Friendship> findAllFriends(@NotBlank String username) {
 
         String authUsername = userSecurity.getUserPrinciple().getUsername();
-        InfoEntityVisibility visibility = userService.findByUsername(username).getUserInfo().getFriendsVisibility();
+        AppEntityVisibility visibility = userService.findByUsername(username).getUserInfo().getFriendsVisibility();
 
         List<Friendship> friends = friendshipRepository.findAllFriends(username);
         Set<String> friendsUsernames = extractFriendsUsernames(username, friends);
@@ -66,7 +65,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     public Friendship createNewFriendship(String username, String receiverUsername) {
         receiverUsername = userService.findByUsername(receiverUsername).getUsername(); // throws exception if user not found
         preFriendshipCreation(username, receiverUsername);
-        Friendship friendship = new Friendship(username, receiverUsername, PENDING);
+        Friendship friendship = new Friendship(username, receiverUsername, FriendshipStatus.PENDING);
         return friendshipRepository.save(friendship);
     }
 
@@ -74,7 +73,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     public Friendship acceptFriendship(String username, String senderUsername) {
         Friendship friendship = getFriendshipOrdered(senderUsername, username);
         preFriendshipAccept(friendship);
-        friendship.setStatus(ACCEPTED);
+        friendship.setStatus(FriendshipStatus.ACCEPTED);
         return friendshipRepository.save(friendship);
     }
 
@@ -87,9 +86,9 @@ public class FriendshipServiceImpl implements FriendshipService {
     public boolean checkIfFriends(String username1, String username2) {
         try {
             Friendship friendship = getFriendshipNoOrder(username1, username2);
-            return friendship.getStatus() == ACCEPTED;
+            return friendship.getStatus() == FriendshipStatus.ACCEPTED;
         } catch (ResourceNotFoundException e) {
-            return false; // TODO: TEST
+            return false;
         }
     }
 
@@ -100,30 +99,30 @@ public class FriendshipServiceImpl implements FriendshipService {
         Optional<Friendship> friendshipOptional = friendshipRepository.findByIdNoOrder(username, friendUsername);
         if (friendshipOptional.isPresent()) {
             Friendship friendship = friendshipOptional.get();
-            if (friendship.getStatus() == ACCEPTED) {
+            if (friendship.getStatus() == FriendshipStatus.ACCEPTED) {
                 throw new FriendshipException(ALREADY_FRIENDS);
             }
-            if (friendship.getStatus() == PENDING) {
+            if (friendship.getStatus() == FriendshipStatus.PENDING) {
                 throw new FriendshipException(PENDING_FRIEND_REQUEST);
             }
-            if (friendship.getStatus() == BLOCKED) {
+            if (friendship.getStatus() == FriendshipStatus.BLOCKED) {
                 throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
             }
         }
     }
 
     private void preFriendshipAccept(Friendship friendship) {
-        if (friendship.getStatus() == ACCEPTED) {
+        if (friendship.getStatus() == FriendshipStatus.ACCEPTED) {
             throw new FriendshipException(ALREADY_FRIENDS);
         }
-        if (friendship.getStatus() == BLOCKED) {
+        if (friendship.getStatus() == FriendshipStatus.BLOCKED) {
             throw new ResourceNotFoundException(RESOURCE_NOT_FOUND);
         }
     }
 
     private List<Friendship> filterFriendsByVisibility(List<User> friendsAsUsers, List<Friendship> friends) {
         for (User user : friendsAsUsers) {
-            InfoEntityVisibility visibility = user.getUserInfo().getFriendsVisibility();
+            AppEntityVisibility visibility = user.getUserInfo().getFriendsVisibility();
             if (visibility == FRIENDS) {
                 String authUsername = userSecurity.getUserPrinciple().getUsername();
                 boolean isFriend = checkIfFriends(user.getUsername(), authUsername);

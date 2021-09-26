@@ -1,6 +1,6 @@
 package com.mdwairy.momentsapi.userinfo.education;
 
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntity;
+import com.mdwairy.momentsapi.appentity.AppEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ import static javax.persistence.EnumType.STRING;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Education extends InfoEntity {
+public class Education extends AppEntity {
 
     @Enumerated(STRING)
     private EducationType type;

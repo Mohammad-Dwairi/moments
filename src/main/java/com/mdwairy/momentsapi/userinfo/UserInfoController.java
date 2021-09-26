@@ -1,9 +1,9 @@
 package com.mdwairy.momentsapi.userinfo;
 
+import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
 import com.mdwairy.momentsapi.dto.UserInfoDTO;
 import com.mdwairy.momentsapi.exception.InvalidJsonKeyException;
 import com.mdwairy.momentsapi.mapper.UserInfoMapper;
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -63,7 +63,7 @@ public class UserInfoController {
     }
 
     @PatchMapping("/friends_visibility")
-    public UserInfoDTO updateFriendsVisibility(@RequestBody Map<String, InfoEntityVisibility> body) {
+    public UserInfoDTO updateFriendsVisibility(@RequestBody Map<String, AppEntityVisibility> body) {
         String KEY = "visibility";
         if (body.containsKey(KEY)) {
             return UserInfoMapper.INSTANCE.userInfoToUserInfoDto(userInfoService.updateFriendsVisibility(body.get("visibility")));

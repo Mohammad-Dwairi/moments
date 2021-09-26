@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.util.Date;
 
 @MappedSuperclass
 @AllArgsConstructor
@@ -21,4 +22,6 @@ public class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Date creationDate;
+    private Date modificationDate;
 }

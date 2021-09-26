@@ -1,6 +1,6 @@
 package com.mdwairy.momentsapi.userinfo;
 
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
+import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
 import com.mdwairy.momentsapi.users.UserSecurity;
 import com.mdwairy.momentsapi.users.UserService;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class UserInfoJPA implements UserInfoService {
     }
 
     @Override
-    public UserInfo updateFriendsVisibility(InfoEntityVisibility visibility) {
+    public UserInfo updateFriendsVisibility(AppEntityVisibility visibility) {
         UserInfo userInfo = userSecurity.getUserPrinciple().getUserInfo();
         userInfo.setFriendsVisibility(visibility);
         return userInfoRepository.save(userInfo);

@@ -1,6 +1,6 @@
 package com.mdwairy.momentsapi.userinfo.work;
 
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntity;
+import com.mdwairy.momentsapi.appentity.AppEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-public class Work extends InfoEntity {
+public class Work extends AppEntity {
 
     private String employerName;
     private String role;

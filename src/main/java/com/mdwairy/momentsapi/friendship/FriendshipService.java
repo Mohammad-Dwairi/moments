@@ -1,4 +1,4 @@
-package com.mdwairy.momentsapi.userinfo.friendship;
+package com.mdwairy.momentsapi.friendship;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 

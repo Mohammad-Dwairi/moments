@@ -1,9 +1,9 @@
 package com.mdwairy.momentsapi.userinfo.work;
 
+import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
 import com.mdwairy.momentsapi.exception.ResourceNotFoundException;
+import com.mdwairy.momentsapi.friendship.FriendshipService;
 import com.mdwairy.momentsapi.userinfo.UserInfo;
-import com.mdwairy.momentsapi.userinfo.friendship.FriendshipService;
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserSecurity;
 import com.mdwairy.momentsapi.users.UserService;
@@ -15,8 +15,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static com.mdwairy.momentsapi.appentity.AppEntityVisibility.*;
 import static com.mdwairy.momentsapi.constant.AppExceptionMessage.RESOURCE_NOT_FOUND;
-import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.*;
 
 @Service
 @Transactional
@@ -56,7 +56,7 @@ public class WorkServiceImpl implements WorkService {
         }
 
         Work work = getWorkForRequestedUser(id, username);
-        InfoEntityVisibility visibility = work.getVisibility();
+        AppEntityVisibility visibility = work.getVisibility();
         if (isFriend && visibility == FRIENDS || visibility == PUBLIC) {
             return work;
         }
@@ -73,7 +73,7 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public Work updateVisibility(Long id, InfoEntityVisibility visibility) {
+    public Work updateVisibility(Long id, AppEntityVisibility visibility) {
         Work work = getWorkForAuthenticatedUser(id);
         work.setVisibility(visibility);
         return workRepository.save(work);

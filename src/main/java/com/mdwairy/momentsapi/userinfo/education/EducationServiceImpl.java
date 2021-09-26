@@ -1,9 +1,9 @@
 package com.mdwairy.momentsapi.userinfo.education;
 
+import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
 import com.mdwairy.momentsapi.exception.ResourceNotFoundException;
+import com.mdwairy.momentsapi.friendship.FriendshipService;
 import com.mdwairy.momentsapi.userinfo.UserInfo;
-import com.mdwairy.momentsapi.userinfo.friendship.FriendshipService;
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import com.mdwairy.momentsapi.users.User;
 import com.mdwairy.momentsapi.users.UserSecurity;
 import com.mdwairy.momentsapi.users.UserService;
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static com.mdwairy.momentsapi.appentity.AppEntityVisibility.*;
 import static com.mdwairy.momentsapi.constant.AppExceptionMessage.RESOURCE_NOT_FOUND;
-import static com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility.*;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +57,7 @@ public class EducationServiceImpl implements EducationService {
         }
 
         Education education = getEducationForRequestedUser(username, id);
-        InfoEntityVisibility visibility = education.getVisibility();
+        AppEntityVisibility visibility = education.getVisibility();
 
         if (isFriend && visibility == FRIENDS || visibility == PUBLIC) {
             return education;
@@ -75,7 +75,7 @@ public class EducationServiceImpl implements EducationService {
     }
 
     @Override
-    public Education updateVisibility(Long id, InfoEntityVisibility visibility) {
+    public Education updateVisibility(Long id, AppEntityVisibility visibility) {
         Education education = getEducationForAuthenticatedUser(id);
         education.setVisibility(visibility);
         return educationRepository.save(education);

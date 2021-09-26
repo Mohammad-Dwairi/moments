@@ -1,6 +1,6 @@
 package com.mdwairy.momentsapi.userinfo.picture;
 
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntity;
+import com.mdwairy.momentsapi.appentity.AppEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ import static javax.persistence.EnumType.STRING;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Picture extends InfoEntity {
+public class Picture extends AppEntity {
 
     @NotBlank(message = "Invalid image URL")
     private String url;

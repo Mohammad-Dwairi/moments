@@ -1,4 +1,4 @@
-package com.mdwairy.momentsapi.userinfo.friendship;
+package com.mdwairy.momentsapi.friendship;
 
 public enum FriendshipStatus {
     ACCEPTED, PENDING, BLOCKED

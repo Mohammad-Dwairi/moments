@@ -1,9 +1,9 @@
 package com.mdwairy.momentsapi.userinfo.education;
 
 
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityCommonService;
+import com.mdwairy.momentsapi.appentity.AppEntityCommonService;
 
-public interface EducationService extends InfoEntityCommonService<Education, Long> {
+public interface EducationService extends AppEntityCommonService<Education, Long> {
 
     Education updateSchoolName(Long id, String name);
     Education updateDepartmentName(Long id, String department);

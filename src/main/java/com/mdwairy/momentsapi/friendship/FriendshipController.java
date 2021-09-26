@@ -1,4 +1,4 @@
-package com.mdwairy.momentsapi.userinfo.friendship;
+package com.mdwairy.momentsapi.friendship;
 
 import com.mdwairy.momentsapi.exception.InvalidJsonKeyException;
 import com.mdwairy.momentsapi.exception.InvalidRequestParamValue;

@@ -1,8 +1,8 @@
 package com.mdwairy.momentsapi.userinfo.picture;
 
 
+import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
 import com.mdwairy.momentsapi.exception.InvalidJsonKeyException;
-import com.mdwairy.momentsapi.userinfo.infoentity.InfoEntityVisibility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +40,7 @@ public class PictureController {
     }
 
     @PatchMapping("{id}/visibility")
-    public Picture changePictureVisibility(@RequestBody Map<String, InfoEntityVisibility> body, @PathVariable Long id) {
+    public Picture changePictureVisibility(@RequestBody Map<String, AppEntityVisibility> body, @PathVariable Long id) {
         String KEY = "visibility";
         if (body.containsKey(KEY)) {
             return pictureService.updateVisibility(id, body.get(KEY));
