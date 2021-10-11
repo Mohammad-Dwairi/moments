@@ -1,8 +1,6 @@
 package com.mdwairy.momentsapi.appentity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mdwairy.momentsapi.users.User;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,10 +16,6 @@ public class AppEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     protected Long id;
-
-    @OneToOne
-    @JsonIgnore
-    protected User user;
 
     @JsonProperty(access = READ_ONLY)
     protected Date createdAt;

@@ -1,7 +1,6 @@
 package com.mdwairy.momentsapi.userinfo;
 
 import com.mdwairy.momentsapi.appentity.AppEntityVisibility;
-import com.mdwairy.momentsapi.model.BaseEntity;
 import com.mdwairy.momentsapi.userinfo.education.Education;
 import com.mdwairy.momentsapi.userinfo.picture.Picture;
 import com.mdwairy.momentsapi.userinfo.work.Work;
@@ -17,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.mdwairy.momentsapi.appentity.AppEntityVisibility.PUBLIC;
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.EnumType.STRING;
 
 @Entity
@@ -24,21 +24,24 @@ import static javax.persistence.EnumType.STRING;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInfo extends BaseEntity {
+public class UserInfo {
 
+    @Id
+    @Column(name = "user_id")
+    private Long id;
+
+    @MapsId
     @OneToOne(mappedBy = "userInfo", fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy = "user", cascade = ALL)
     private List<Picture> pictures;
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy = "user", cascade = ALL)
     private List<Education> educationList;
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy = "user", cascade = ALL)
     private List<Work> workList;
 
     @OneToOne
@@ -57,6 +60,10 @@ public class UserInfo extends BaseEntity {
 
     @Enumerated(STRING)
     private AppEntityVisibility friendsVisibility = PUBLIC;
+
+    public UserInfo(User user) {
+        this.user = user;
+    }
 
     public void addWork(Work work) {
         if (this.workList == null) {

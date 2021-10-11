@@ -56,7 +56,7 @@ public class User implements Serializable {
     private UserRole role;
 
     @OneToOne
-    private UserInfo userInfo = new UserInfo();
+    private UserInfo userInfo = new UserInfo(this);
 
     public User(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;

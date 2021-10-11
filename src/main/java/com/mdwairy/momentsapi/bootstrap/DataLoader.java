@@ -30,7 +30,6 @@ public class DataLoader implements CommandLineRunner {
         user.setRole(ROLE_ADMIN);
         user.setIsAccountLocked(false);
         user.setIsAccountEnabled(true);
-
         userService.register(user);
         log.info("User Registered... ");
     }
